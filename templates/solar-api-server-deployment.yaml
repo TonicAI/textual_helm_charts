@@ -1,0 +1,185 @@
+{{- $ports := (.Values.solar_api_server).ports | default dict }}
+{{- $httpsOnly := $ports.httpsOnly | default true }}
+{{- $httpPort := $ports.http | default 6880 }}
+{{- $httpsPort := $ports.https | default 6443 }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: solar-api-server
+  name: solar-api-server
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solar-api-server
+  strategy:
+    type: {{ .Values.deployStrategy | quote | default "Recreate" }}
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: solar-api-server
+    spec:
+      containers:
+        - securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+          - name: var-logs-public
+            mountPath: /usr/bin/solar/logs_public
+          - name: var-logs
+            mountPath: /usr/bin/solar/logs
+          - name: vector-configuration
+            mountPath: /usr/bin/solar/vector_config
+          - name: tmp
+            mountPath: /tmp
+          env:
+          {{- if (.Values.solar_api_server).env}}
+          {{- range $key, $value := .Values.solar_api_server.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          - name: SOLAR_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: solar-encryption-secret
+                key: secret
+          - name: SOLAR_DB_DATABASE
+            value: {{ .Values.solarDatabase.dbName }}
+          - name: SOLAR_DB_USERNAME
+            value: {{ .Values.solarDatabase.user }}
+          - name: SOLAR_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: solar-db-password
+                key: password
+          - name: SOLAR_DB_PORT
+            value: {{quote .Values.solarDatabase.port }}
+          - name: SOLAR_DB_SSLMODE
+            value: {{ .Values.solarDatabase.sslMode }}
+          - name: SOLAR_DB_HOST
+            value: {{ .Values.solarDatabase.host }}
+          - name: ENVIRONMENT_NAME
+            value: {{ .Values.environmentName }}
+          {{- if .Values.googleClientId }}
+          - name: SOLAR_SSO_GOOGLE_CLIENT_ID
+            value: { { .Values.googleClientId } }
+          {{- end }}
+          {{- if .Values.googleClientSecret }}
+          - name: SOLAR_SSO_GOOGLE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: google-sso-client-secret
+                key: secret
+          {{- end }}
+          {{- if .Values.githubClientId }}
+          - name: SOLAR_SSO_GITHUB_CLIENT_ID
+            value: { { .Values.githubClientId } }
+          {{- end }}
+          {{- if .Values.githubClientSecret }}
+          - name: SOLAR_SSO_GITHUB_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: github-sso-client-secret
+                key: secret
+          {{- end }}
+          {{- if .Values.oktaClientId }}
+          - name: SOLAR_SSO_OKTA_CLIENT_ID
+            value: { { .Values.oktaClientId } }
+          {{- end }}
+          {{- if .Values.oktaDomain }}
+          - name: SOLAR_SSO_OKTA_DOMAIN
+            value: { { .Values.oktaDomain } }
+          {{- end }}
+          {{- if .Values.oktaAuthServerId }}
+          - name: SOLAR_SSO_OKTA_AUTHORIZATION_SERVER_ID
+            value: { { .Values.oktaAuthServerId } }
+          {{- end }}
+          {{- if .Values.oktaIdentityProviderId }}
+          - name: SOLAR_SSO_OKTA_IDENTITY_PROVIDER_ID
+            value: { { .Values.oktaIdentityProviderId } }
+          {{- end }}
+          - name: SOLAR_PY_URL
+            value: https://solar-ml:7701
+          {{- if not $httpsOnly }}
+          - name: SOLAR_PORT_HTTP
+            value: {{ $httpPort | quote }}
+          {{- end }}
+          - name: SOLAR_PORT_HTTPS
+            value: {{ $httpsPort | quote }}
+          - name: SOLAR_HTTPS_ONLY
+            value: {{ $httpsOnly | quote }}
+          image: quay.io/tonicai/solar-api:{{ .Values.solarVersion }}
+          imagePullPolicy: IfNotPresent
+          name: solar-api-server
+          ports:
+          {{- if not $httpsOnly }}
+          - containerPort: {{ $httpPort }}
+            name: "http"
+          {{- end }}
+          - containerPort: {{ $httpsPort }}
+            name: "https"
+          resources:
+            limits:
+              memory: "3Gi"
+            requests:
+              memory: "512Mi"
+              ephemeral-storage: "512Mi"
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /health
+              port: {{ $httpsPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 5
+        - name: vector
+          image: timberio/vector:latest-alpine
+          env:
+            - name: VECTOR_SELF_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+            - name: VECTOR_SELF_POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: VECTOR_SELF_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: LOG_COLLECTION_FOLDER
+              value: "/usr/bin/solar/logs_public"
+          volumeMounts:
+            - name: var-logs-public
+              mountPath: "/usr/bin/solar/logs_public"
+            - name: vector-configuration
+              mountPath: "/usr/bin/solar/vector_config"
+            - name: vector-working
+              mountPath: "/etc/solar/vector_data"
+          args:
+            - "-w"
+            - "--config"
+            - "/usr/bin/solar/vector_config/vector.toml"
+      restartPolicy: Always
+      serviceAccountName: {{ template "solar.serviceAccountName" . }}
+      imagePullSecrets:
+        - name: solar-image-pull-secret
+      volumes:
+      - name: var-logs-public
+        emptyDir: {}
+      - name: var-logs
+        emptyDir: {}
+      - name: vector-configuration
+        emptyDir: {}
+      - name: vector-working
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+status: {}
