@@ -3,6 +3,6 @@ name: solar
 description: A Helm chart for Solar
 type: application
 
-version: "1.0.0"
+version: "1.0.1"
 
 appVersion: "8"
