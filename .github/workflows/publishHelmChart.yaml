@@ -22,9 +22,9 @@ jobs:
           lfs: false
       - name: Pack and Publish
         run: |
-          helm package --version "0.1.0" .
+          helm package --version "0.2.0" .
           echo "${HELM_PASS}" | helm registry login ghcr.io -u "${HELM_USER}" --password-stdin
-          helm push "${CHART_NAME}-0.1.0.tgz" oci://ghcr.io/tonicai
+          helm push "${CHART_NAME}-0.2.0.tgz" oci://ghcr.io/tonicai
         working-directory: ./
         env:
           HELM_USER: ${{ github.actor }}
