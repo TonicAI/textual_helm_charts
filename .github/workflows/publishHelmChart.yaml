@@ -1,0 +1,32 @@
+name: Publish Helm Chart
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '**'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  pack-and-push:
+    runs-on: ubuntu-22.04
+    name: Publish Helm Chart
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: false
+      - name: Pack and Publish
+        run: |
+          helm package --version "0.1.0" .
+          echo "${HELM_PASS}" | helm registry login ghcr.io -u "${HELM_USER}" --password-stdin
+          helm push "${CHART_NAME}-0.1.0.tgz" oci://ghcr.io/tonicai
+        working-directory: ./
+        env:
+          HELM_USER: ${{ github.actor }}
+          HELM_PASS: ${{ github.token }}
+          CHART_NAME: "solar"
