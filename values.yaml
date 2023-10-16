@@ -5,6 +5,8 @@ solarVersion: "<version-number>"
 
 solarEncryptionSecret: <encryption-key>
 
+openAiKey: <your-openai-key>
+
 # solarDatabase is the postgres database that will hold information about your workspace.
 solarDatabase:
   host: <db-host>

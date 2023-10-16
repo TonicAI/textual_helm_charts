@@ -63,13 +63,28 @@ spec:
               value: https://solar-ml:7701
             - name: SOLAR_WORKER_HEALTH_PORT_HTTPS
               value: "8443"
+            {{- if .Values.enableLogCollection }}
+            - name: ENABLE_LOG_COLLECTION
+              value: {{ .Values.enableLogCollection }}
+            {{- end }}
+            {{- if .Values.openAiKey }}
+            - name: SOLAR_OPENAI_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-key-secret
+                  key: secret
+            {{- end }}
             {{- if (.Values.solar_worker).env}}
             {{- range $key, $value := .Values.solar_worker.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
+          {{- if (.Values.solar_worker).image }}
+          image: {{ .Values.solar_worker.image }}:{{ .Values.solarVersion }}
+          {{ else }}
           image: quay.io/tonicai/solar-worker:{{ .Values.solarVersion }}
+          {{- end }}
           imagePullPolicy: IfNotPresent
           name: solar-worker
           ports:

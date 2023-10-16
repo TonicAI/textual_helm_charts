@@ -37,8 +37,8 @@ spec:
           env:
           {{- if (.Values.solar_api_server).env}}
           {{- range $key, $value := .Values.solar_api_server.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
           {{- end }}
           {{- end }}
           - name: SOLAR_SECRET
@@ -65,7 +65,7 @@ spec:
             value: {{ .Values.environmentName }}
           {{- if .Values.googleClientId }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_ID
-            value: { { .Values.googleClientId } }
+            value: {{ .Values.googleClientId }}
           {{- end }}
           {{- if .Values.googleClientSecret }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_SECRET
@@ -76,7 +76,7 @@ spec:
           {{- end }}
           {{- if .Values.githubClientId }}
           - name: SOLAR_SSO_GITHUB_CLIENT_ID
-            value: { { .Values.githubClientId } }
+            value: {{ .Values.githubClientId }}
           {{- end }}
           {{- if .Values.githubClientSecret }}
           - name: SOLAR_SSO_GITHUB_CLIENT_SECRET
@@ -87,19 +87,30 @@ spec:
           {{- end }}
           {{- if .Values.oktaClientId }}
           - name: SOLAR_SSO_OKTA_CLIENT_ID
-            value: { { .Values.oktaClientId } }
+            value: {{ .Values.oktaClientId }}
           {{- end }}
           {{- if .Values.oktaDomain }}
           - name: SOLAR_SSO_OKTA_DOMAIN
-            value: { { .Values.oktaDomain } }
+            value: {{ .Values.oktaDomain }}
           {{- end }}
           {{- if .Values.oktaAuthServerId }}
           - name: SOLAR_SSO_OKTA_AUTHORIZATION_SERVER_ID
-            value: { { .Values.oktaAuthServerId } }
+            value: {{ .Values.oktaAuthServerId }}
           {{- end }}
           {{- if .Values.oktaIdentityProviderId }}
           - name: SOLAR_SSO_OKTA_IDENTITY_PROVIDER_ID
-            value: { { .Values.oktaIdentityProviderId } }
+            value: {{ .Values.oktaIdentityProviderId }}
+          {{- end }}
+          {{- if .Values.openAiKey }}
+          - name: SOLAR_OPENAI_KEY
+            valueFrom:
+              secretKeyRef:
+                name: openai-key-secret
+                key: secret
+          {{- end }}
+          {{- if .Values.enableLogCollection }}
+          - name: ENABLE_LOG_COLLECTION
+            value: {{ .Values.enableLogCollection }}
           {{- end }}
           - name: SOLAR_PY_URL
             value: https://solar-ml:7701
@@ -111,7 +122,11 @@ spec:
             value: {{ $httpsPort | quote }}
           - name: SOLAR_HTTPS_ONLY
             value: {{ $httpsOnly | quote }}
+          {{- if  (.Values.solar_api_server).image }}
+          image: {{ .Values.solar_api_server.image }}:{{ .Values.solarVersion }}
+          {{ else }}
           image: quay.io/tonicai/solar-api:{{ .Values.solarVersion }}
+          {{- end }}
           imagePullPolicy: IfNotPresent
           name: solar-api-server
           ports:

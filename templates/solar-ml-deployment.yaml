@@ -28,19 +28,46 @@ spec:
             mountPath: /usr/bin/solar/logs
           - name: vector-configuration
             mountPath: /usr/bin/solar/vector_config
+          - name: supervisor-run
+            mountPath: /var/log/supervisor
+          - name: supervisor-log
+            mountPath: /var/run/supervisor
           - name: tmp
             mountPath: /tmp
         env:
-        {{- if (.Values.solar_ml).env}}
+          - name: SOLAR_DB_DATABASE
+            value: {{ .Values.solarDatabase.dbName }}
+          - name: SOLAR_DB_USERNAME
+            value: {{ .Values.solarDatabase.user }}
+          - name: SOLAR_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: solar-db-password
+                key: password
+          - name: SOLAR_DB_PORT
+            value: {{quote .Values.solarDatabase.port }}
+          - name: SOLAR_DB_SSLMODE
+            value: {{ .Values.solarDatabase.sslMode }}
+          - name: SOLAR_DB_HOST
+            value: {{ .Values.solarDatabase.host }}
+        {{- if .Values.enableLogCollection }}
+          - name: ENABLE_LOG_COLLECTION
+            value: {{ .Values.enableLogCollection }}
+        {{- end }}
+        {{- if (.Values.solar_ml).env }}
         {{- range $key, $value := .Values.solar_ml.env }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
         {{- end }}
         {{- end }}
-        - name: ENVIRONMENT_NAME
-          value: {{ .Values.environmentName }}
+          - name: ENVIRONMENT_NAME
+            value: {{ .Values.environmentName }}
+        {{- if  (.Values.solar_ml).image }}
+        image: {{ .Values.solar_ml.image }}:{{ .Values.solarVersion }}
+        {{ else }}
         image: quay.io/tonicai/solar-ml:{{ .Values.solarVersion }}
-        imagePullPolicy: Always
+        {{- end }}
+        imagePullPolicy: IfNotPresent
         name: solar-ml
         ports:
           - containerPort: 7701
@@ -102,6 +129,10 @@ spec:
         - name: vector-configuration
           emptyDir: {}
         - name: vector-working
+          emptyDir: {}
+        - name: supervisor-run
+          emptyDir: {}
+        - name: supervisor-log
           emptyDir: {}
         - name: tmp
           emptyDir: {}

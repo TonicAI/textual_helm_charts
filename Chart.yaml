@@ -1,8 +1,8 @@
 apiVersion: v2
-name: solar-charts
+name: solar
 description: A Helm chart for Solar
 type: application
 
-version: "0.1.0"
+version: "1.0.0"
 
-appVersion: "016"
+appVersion: "8"
