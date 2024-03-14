@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "solar.fullname" . }}-test-connection"
+  name: "{{ include "textual.fullname" . }}-test-connection"
   labels:
-    {{- include "solar.labels" . | nindent 4 }}
+    {{- include "textual.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
 spec:
@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['solar-api-server:443']
+      args: ['textual-api-server:443']
   restartPolicy: Never

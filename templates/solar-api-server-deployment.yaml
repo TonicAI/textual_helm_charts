@@ -1,4 +1,4 @@
-{{- $ports := (.Values.solar_api_server).ports | default dict }}
+{{- $ports := (.Values.textual_api_server).ports | default dict }}
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 6880 }}
 {{- $httpsPort := $ports.https | default 6443 }}
@@ -6,37 +6,37 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: solar-api-server
-  name: solar-api-server
+    app: textual-api-server
+  name: textual-api-server
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: solar-api-server
+      app: textual-api-server
   strategy:
     type: {{ .Values.deployStrategy | quote | default "Recreate" }}
   revisionHistoryLimit: 1
   template:
     metadata:
       labels:
-        app: solar-api-server
+        app: textual-api-server
     spec:
       containers:
         - securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
           - name: var-logs-public
-            mountPath: /usr/bin/solar/logs_public
+            mountPath: /usr/bin/textual/logs_public
           - name: var-logs
-            mountPath: /usr/bin/solar/logs
+            mountPath: /usr/bin/textual/logs
           - name: vector-configuration
-            mountPath: /usr/bin/solar/vector_config
+            mountPath: /usr/bin/textual/vector_config
           - name: tmp
             mountPath: /tmp
           env:
-          {{- if (.Values.solar_api_server).env}}
-          {{- range $key, $value := .Values.solar_api_server.env }}
+          {{- if (.Values.textual_api_server).env}}
+          {{- range $key, $value := .Values.textual_api_server.env }}
           - name: {{ $key }}
             value: {{ $value | quote }}
           {{- end }}
@@ -44,23 +44,23 @@ spec:
           - name: SOLAR_SECRET
             valueFrom:
               secretKeyRef:
-                name: solar-encryption-secret
+                name: textual-encryption-secret
                 key: secret
           - name: SOLAR_DB_DATABASE
-            value: {{ .Values.solarDatabase.dbName }}
+            value: {{ .Values.textualDatabase.dbName }}
           - name: SOLAR_DB_USERNAME
-            value: {{ .Values.solarDatabase.user }}
+            value: {{ .Values.textualDatabase.user }}
           - name: SOLAR_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: solar-db-password
+                name: textual-db-password
                 key: password
           - name: SOLAR_DB_PORT
-            value: {{quote .Values.solarDatabase.port }}
+            value: {{quote .Values.textualDatabase.port }}
           - name: SOLAR_DB_SSLMODE
-            value: {{ .Values.solarDatabase.sslMode }}
+            value: {{ .Values.textualDatabase.sslMode }}
           - name: SOLAR_DB_HOST
-            value: {{ .Values.solarDatabase.host }}
+            value: {{ .Values.textualDatabase.host }}
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
           {{- if .Values.googleClientId }}
@@ -101,11 +101,19 @@ spec:
           - name: SOLAR_SSO_OKTA_IDENTITY_PROVIDER_ID
             value: {{ .Values.oktaIdentityProviderId }}
           {{- end }}
-          {{- if .Values.openAiKey }}
-          - name: SOLAR_OPENAI_KEY
+          {{- if .Values.azureClientId }}
+          - name: SOLAR_SSO_AZURE_CLIENT_ID
+            value: {{ .Values.azureClientId }}
+          {{- end }}
+          {{- if .Values.azureTenantId }}
+          - name: SOLAR_SSO_AZURE_TENANT_ID
+            value: {{ .Values.azureClientId }}
+          {{- end }}
+          {{- if .Values.azureClientSecret }}
+          - name: SOLAR_SSO_AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: openai-key-secret
+                name: azure-sso-client-secret
                 key: secret
           {{- end }}
           {{- if .Values.enableLogCollection }}
@@ -113,7 +121,7 @@ spec:
             value: {{ .Values.enableLogCollection }}
           {{- end }}
           - name: SOLAR_PY_URL
-            value: https://solar-ml:7701
+            value: https://textual-ml:7701
           {{- if not $httpsOnly }}
           - name: SOLAR_PORT_HTTP
             value: {{ $httpPort | quote }}
@@ -122,13 +130,13 @@ spec:
             value: {{ $httpsPort | quote }}
           - name: SOLAR_HTTPS_ONLY
             value: {{ $httpsOnly | quote }}
-          {{- if  (.Values.solar_api_server).image }}
-          image: {{ .Values.solar_api_server.image }}:{{ .Values.solarVersion }}
+          {{- if  (.Values.textual_api_server).image }}
+          image: {{ .Values.textual_api_server.image }}:{{ .Values.textualVersion }}
           {{ else }}
-          image: quay.io/tonicai/solar-api:{{ .Values.solarVersion }}
+          image: quay.io/tonicai/textual-api:{{ .Values.textualVersion }}
           {{- end }}
           imagePullPolicy: IfNotPresent
-          name: solar-api-server
+          name: textual-api-server
           ports:
           {{- if not $httpsOnly }}
           - containerPort: {{ $httpPort }}
@@ -170,22 +178,22 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.namespace
             - name: LOG_COLLECTION_FOLDER
-              value: "/usr/bin/solar/logs_public"
+              value: "/usr/bin/textual/logs_public"
           volumeMounts:
             - name: var-logs-public
-              mountPath: "/usr/bin/solar/logs_public"
+              mountPath: "/usr/bin/textual/logs_public"
             - name: vector-configuration
-              mountPath: "/usr/bin/solar/vector_config"
+              mountPath: "/usr/bin/textual/vector_config"
             - name: vector-working
-              mountPath: "/etc/solar/vector_data"
+              mountPath: "/etc/textual/vector_data"
           args:
             - "-w"
             - "--config"
-            - "/usr/bin/solar/vector_config/vector.toml"
+            - "/usr/bin/textual/vector_config/vector.toml"
       restartPolicy: Always
-      serviceAccountName: {{ template "solar.serviceAccountName" . }}
+      serviceAccountName: {{ template "textual.serviceAccountName" . }}
       imagePullSecrets:
-        - name: solar-image-pull-secret
+        - name: textual-image-pull-secret
       volumes:
       - name: var-logs-public
         emptyDir: {}

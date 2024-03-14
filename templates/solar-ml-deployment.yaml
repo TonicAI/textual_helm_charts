@@ -1,74 +1,76 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: solar-ml
+  name: textual-ml
   namespace: {{ .Release.Namespace }}
   labels:
-    app: solar-ml
+    app: textual-ml
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: solar-ml
+      app: textual-ml
   strategy:
     type: {{ .Values.deployStrategy | quote | default "Recreate" }}
   revisionHistoryLimit: 1
   template:
     metadata:
       labels:
-        app: solar-ml
+        app: textual-ml
     spec:
       containers:
       - securityContext:
           readOnlyRootFilesystem: true
         volumeMounts:
           - name: var-logs-public
-            mountPath: /usr/bin/solar/logs_public
+            mountPath: /usr/bin/textual/logs_public
           - name: var-logs
-            mountPath: /usr/bin/solar/logs
+            mountPath: /usr/bin/textual/logs
           - name: vector-configuration
-            mountPath: /usr/bin/solar/vector_config
+            mountPath: /usr/bin/textual/vector_config
           - name: supervisor-run
             mountPath: /var/log/supervisor
           - name: supervisor-log
             mountPath: /var/run/supervisor
+          - name: custom-models
+            mountPath: /usr/bin/textual/custom_models
           - name: tmp
             mountPath: /tmp
         env:
           - name: SOLAR_DB_DATABASE
-            value: {{ .Values.solarDatabase.dbName }}
+            value: {{ .Values.textualDatabase.dbName }}
           - name: SOLAR_DB_USERNAME
-            value: {{ .Values.solarDatabase.user }}
+            value: {{ .Values.textualDatabase.user }}
           - name: SOLAR_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: solar-db-password
+                name: textual-db-password
                 key: password
           - name: SOLAR_DB_PORT
-            value: {{quote .Values.solarDatabase.port }}
+            value: {{quote .Values.textualDatabase.port }}
           - name: SOLAR_DB_SSLMODE
-            value: {{ .Values.solarDatabase.sslMode }}
+            value: {{ .Values.textualDatabase.sslMode }}
           - name: SOLAR_DB_HOST
-            value: {{ .Values.solarDatabase.host }}
+            value: {{ .Values.textualDatabase.host }}
         {{- if .Values.enableLogCollection }}
           - name: ENABLE_LOG_COLLECTION
             value: {{ .Values.enableLogCollection }}
         {{- end }}
-        {{- if (.Values.solar_ml).env }}
-        {{- range $key, $value := .Values.solar_ml.env }}
+        {{- if (.Values.textual_ml).env }}
+        {{- range $key, $value := .Values.textual_ml.env }}
           - name: {{ $key }}
             value: {{ $value | quote }}
         {{- end }}
         {{- end }}
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
-        {{- if  (.Values.solar_ml).image }}
-        image: {{ .Values.solar_ml.image }}:{{ .Values.solarVersion }}
+        {{- if  (.Values.textual_ml).image }}
+        image: {{ .Values.textual_ml.image }}:{{ .Values.textualVersion }}
         {{ else }}
-        image: quay.io/tonicai/solar-ml:{{ .Values.solarVersion }}
+        image: quay.io/tonicai/textual-ml:{{ .Values.textualVersion }}
         {{- end }}
         imagePullPolicy: IfNotPresent
-        name: solar-ml
+        name: textual-ml
         ports:
           - containerPort: 7701
         resources:
@@ -105,22 +107,22 @@ spec:
                 apiVersion: v1
                 fieldPath: metadata.namespace
           - name: LOG_COLLECTION_FOLDER
-            value: "/usr/bin/solar/logs_public"
+            value: "/usr/bin/textual/logs_public"
         volumeMounts:
           - name: var-logs-public
-            mountPath: "/usr/bin/solar/logs_public"
+            mountPath: "/usr/bin/textual/logs_public"
           - name: vector-configuration
-            mountPath: "/usr/bin/solar/vector_config"
+            mountPath: "/usr/bin/textual/vector_config"
           - name: vector-working
-            mountPath: "/etc/solar/vector_data"
+            mountPath: "/etc/textual/vector_data"
         args:
           - "-w"
           - "--config"
-          - "/usr/bin/solar/vector_config/vector.toml"
+          - "/usr/bin/textual/vector_config/vector.toml"
       restartPolicy: Always
       imagePullSecrets:
-        - name: solar-image-pull-secret
-      serviceAccountName: {{ template "solar.serviceAccountName" . }}
+        - name: textual-image-pull-secret
+      serviceAccountName: {{ template "textual.serviceAccountName" . }}
       volumes:
         - name: var-logs-public
           emptyDir: {}
@@ -133,6 +135,8 @@ spec:
         - name: supervisor-run
           emptyDir: {}
         - name: supervisor-log
+          emptyDir: {}
+        - name: custom-models
           emptyDir: {}
         - name: tmp
           emptyDir: {}

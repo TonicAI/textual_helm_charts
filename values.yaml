@@ -1,22 +1,20 @@
 environmentName: <company-name>
 
 # You can set this to a specific Solar version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Solar.
-solarVersion: "<version-number>"
+textualVersion: "<version-number>"
 
-solarEncryptionSecret: <encryption-key>
+textualEncryptionSecret: <encryption-key>
 
-openAiKey: <your-openai-key>
-
-# solarDatabase is the postgres database that will hold information about your workspace.
-solarDatabase:
+# textualDatabase is the postgres database that will hold information about your workspace.
+textualDatabase:
   host: <db-host>
   port: 5432
-  dbName: solar
+  dbName: textual
   user: <user>
   password: <password>
   sslMode: Require
 
-solar_api_server:
+textual_api_server:
   env: {}
   # annotations to apply to the service that routes traffic to the web server
   #annotations: {}
@@ -32,22 +30,39 @@ solar_api_server:
     httpsOnly: true
     https: 443
     http: 80
-solar_worker:
+  # supported values are LoadBalancer, ClusterIP and NodePort. LoadBalancer is
+  # the default if this isn't provided
+  service_type: "LoadBalancer"
+textual_worker:
   # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
   numberOfWorkers: 1
   env: {}
-solar_ml:
+textual_ml:
   env: {}
 
+
+ingress:
+  enabled: false
+  class: nginx
+  host: null
+  labels: {}
+  # By default this chart will create an nginx ingress, however providing
+  # additional annotations will disable this
+  #  annotations: {}
 
 # This value will be provided to you by Solar and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
 
-# Service account for solar
+# Service account for textual
 serviceAccount:
   create: true
   annotations: {}
-  name: solar
+  name: textual
+
+
+# OCR Credentials
+#azureDocIntelligenceKey: <key>
+#azureDocIntelligenceEndpoint: <enndpoint-url>
 
 # Google SSO Config
 # -----------------
@@ -65,6 +80,12 @@ serviceAccount:
 # -----------------
 #githubClientId: <client-id>
 #githubClientSecret: <client-secret>
+
+# Azure SSO Config
+# -----------------
+#azureClientId: <client-id>
+#azureTenantId: <tenant-id>
+#azureClientSecret: <client-secret>
 
 # Deployment Strategy: This can be set to either "RollingUpdate" or "Recreate". If not provided, the default value
 # is "Recreate". "RollingUpdate" will perform a rolling update of the deployment similar to a blue/green

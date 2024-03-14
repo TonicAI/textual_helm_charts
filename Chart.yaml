@@ -1,6 +1,6 @@
 apiVersion: v2
-name: solar
-description: A Helm chart for Solar
+name: textual
+description: A Helm chart for Textual
 type: application
 
 version: "1.0.0"

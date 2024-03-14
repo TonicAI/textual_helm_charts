@@ -2,91 +2,95 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: solar-worker
-  name: solar-worker
+    app: textual-worker
+  name: textual-worker
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ (.Values.solar_worker).numberOfWorkers | default 1 }}
+  replicas: {{ (.Values.textual_worker).numberOfWorkers | default 1 }}
   selector:
     matchLabels:
-      app: solar-worker
+      app: textual-worker
   strategy:
     type: {{ .Values.deployStrategy | quote | default "Recreate" }}
   revisionHistoryLimit: 1
   template:
     metadata:
       labels:
-        app: solar-worker
+        app: textual-worker
     spec:
       containers:
         - securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
           - name: var-logs-public
-            mountPath: /usr/bin/solar/logs_public
+            mountPath: /usr/bin/textual/logs_public
           - name: var-logs
-            mountPath: /usr/bin/solar/logs
+            mountPath: /usr/bin/textual/logs
           - name: vector-configuration
-            mountPath: /usr/bin/solar/vector_config
+            mountPath: /usr/bin/textual/vector_config
           - name: tmp
             mountPath: /tmp
           env:
             - name: SOLAR_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: solar-encryption-secret
+                  name: textual-encryption-secret
                   key: secret
             - name: SOLAR_DB_DATABASE
-              value: {{ .Values.solarDatabase.dbName }}
+              value: {{ .Values.textualDatabase.dbName }}
             - name: SOLAR_DB_USERNAME
-              value: {{ .Values.solarDatabase.user }}
+              value: {{ .Values.textualDatabase.user }}
             - name: SOLAR_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: solar-db-password
+                  name: textual-db-password
                   key: password
             - name: SOLAR_DB_PORT
-              value: {{quote .Values.solarDatabase.port }}
+              value: {{quote .Values.textualDatabase.port }}
             - name: SOLAR_DB_SSLMODE
-              value: {{ .Values.solarDatabase.sslMode }}
+              value: {{ .Values.textualDatabase.sslMode }}
             - name: SOLAR_DB_HOST
-              value: {{ .Values.solarDatabase.host }}
+              value: {{ .Values.textualDatabase.host }}
             - name: ENVIRONMENT_NAME
               value: {{ .Values.environmentName }}
             - name: SOLAR_PYML_URL
-              value: https://solar-ml:7701
+              value: https://textual-ml:7701
             - name: SOLAR_WEB_URL
-              value: https://solar-api-server
+              value: https://textual-api-server
             - name: SOLAR_HTTPS_ONLY
               value: "true"
             - name: SOLAR_PY_URL
-              value: https://solar-ml:7701
+              value: https://textual-ml:7701
             - name: SOLAR_WORKER_HEALTH_PORT_HTTPS
               value: "8443"
             {{- if .Values.enableLogCollection }}
             - name: ENABLE_LOG_COLLECTION
               value: {{ .Values.enableLogCollection }}
             {{- end }}
-            {{- if .Values.openAiKey }}
-            - name: SOLAR_OPENAI_KEY
+            {{- if .Values.azureDocIntelligenceKey }}
+            - name: SOLAR_AZURE_DOC_INTELLIGENCE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: openai-key-secret
+                  name: azure-document-intelligence-key-secret
                   key: secret
             {{- end }}
-            {{- if (.Values.solar_worker).env}}
-            {{- range $key, $value := .Values.solar_worker.env }}
+            {{- if .Values.azureDocIntelligenceEndpoint }}
+            - name: SOLAR_AZURE_DOC_INTELLIGENCE_ENDPOINT
+              value: {{ .Values.azureDocIntelligenceEndpoint }}
+            {{- end }}
+            {{- if (.Values.textual_worker).env}}
+            {{- range $key, $value := .Values.textual_worker.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
-          {{- if (.Values.solar_worker).image }}
-          image: {{ .Values.solar_worker.image }}:{{ .Values.solarVersion }}
+          {{- if (.Values.textual_worker).image }}
+          image: {{ .Values.textual_worker.image }}:{{ .Values.textualVersion }}
           {{ else }}
-          image: quay.io/tonicai/solar-worker:{{ .Values.solarVersion }}
+          image: quay.io/tonicai/textual-worker:{{ .Values.textualVersion }}
           {{- end }}
           imagePullPolicy: IfNotPresent
-          name: solar-worker
+          name: textual-worker
           ports:
             - containerPort: 8443
           resources:
@@ -123,22 +127,22 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.namespace
             - name: LOG_COLLECTION_FOLDER
-              value: "/usr/bin/solar/logs_public"
+              value: "/usr/bin/textual/logs_public"
           volumeMounts:
             - name: var-logs-public
-              mountPath: "/usr/bin/solar/logs_public"
+              mountPath: "/usr/bin/textual/logs_public"
             - name: vector-configuration
-              mountPath: "/usr/bin/solar/vector_config"
+              mountPath: "/usr/bin/textual/vector_config"
             - name: vector-working
-              mountPath: "/etc/solar/vector_data"
+              mountPath: "/etc/textual/vector_data"
           args:
             - "-w"
             - "--config"
-            - "/usr/bin/solar/vector_config/vector.toml"
+            - "/usr/bin/textual/vector_config/vector.toml"
       restartPolicy: Always
-      serviceAccountName: {{ template "solar.serviceAccountName" . }}
+      serviceAccountName: {{ template "textual.serviceAccountName" . }}
       imagePullSecrets:
-      - name: solar-image-pull-secret
+      - name: textual-image-pull-secret
       volumes:
         - name: var-logs-public
           emptyDir: {}

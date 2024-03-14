@@ -1,15 +1,15 @@
-{{- $ports := (.Values.solar_api_server).ports | default dict }}
+{{- $ports := (.Values.textual_api_server).ports | default dict }}
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 6880 }}
 {{- $httpsPort := $ports.https | default 6443 }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: solar-api-server
+  name: textual-api-server
   namespace: {{ .Release.Namespace }}
-{{- if  (.Values.solar_api_server).annotations }}
+{{- if  (.Values.textual_api_server).annotations }}
   annotations:
-  {{- toYaml .Values.solar_api_server.annotations | nindent 4 }}
+  {{- toYaml .Values.textual_api_server.annotations | nindent 4 }}
 {{- else }}
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-internal: "true"
@@ -19,7 +19,7 @@ metadata:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 {{- end }}
   labels:
-    app: solar-api-server
+    app: textual-api-server
 spec:
   ports:
 {{- if not $httpsOnly }}
@@ -30,8 +30,6 @@ spec:
     - name: "https"
       port: 443
       targetPort: {{ $httpsPort }}
-  type: LoadBalancer
+  type: {{ (.Values.textual_api_server).service_type | default "LoadBalancer" }}
   selector:
-    app: solar-api-server
-status:
-  loadBalancer: {}
+    app: textual-api-server

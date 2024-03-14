@@ -1,0 +1,42 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "textual-api-server"
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  {{- else }}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-next-upstream-timeout: "3600"
+  {{- end }}
+  {{- if .Values.ingress.labels }}
+  labels:
+    {{- with .Values.ingress.labels }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.class }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: "textual-api-server"
+                port:
+                  name: "https"
+      {{- if (.Values).ingress.host }}
+      host: {{ .Values.ingress.host }}
+      {{- end }}
+{{- end }}
