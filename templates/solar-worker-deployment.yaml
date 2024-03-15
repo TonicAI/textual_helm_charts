@@ -63,6 +63,10 @@ spec:
               value: https://textual-ml:7701
             - name: SOLAR_WORKER_HEALTH_PORT_HTTPS
               value: "8443"
+            {{- if .Values.solarStatisticsSeed }}
+            - name: SOLAR_STATISTICS_SEED
+              value: {{quote .Values.solarStatisticsSeed }}
+            {{- end }}
             {{- if .Values.enableLogCollection }}
             - name: ENABLE_LOG_COLLECTION
               value: {{ .Values.enableLogCollection }}

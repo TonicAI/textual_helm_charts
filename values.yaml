@@ -59,6 +59,7 @@ serviceAccount:
   annotations: {}
   name: textual
 
+solarStatisticsSeed: <any-integer>
 
 # OCR Credentials
 #azureDocIntelligenceKey: <key>

@@ -63,6 +63,10 @@ spec:
             value: {{ .Values.textualDatabase.host }}
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
+          {{- if .Values.solarStatisticsSeed }}
+          - name: SOLAR_STATISTICS_SEED
+            value: {{quote .Values.solarStatisticsSeed }}
+          {{- end }}
           {{- if .Values.googleClientId }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_ID
             value: {{ .Values.googleClientId }}
