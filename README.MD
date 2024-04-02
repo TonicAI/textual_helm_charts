@@ -8,7 +8,7 @@ Helm's [documentation](https://helm.sh/docs) to get started. The chart is publis
 
 To install the textual chart:
 
-    helm install -n <your-namespace>  textual oci://ghcr.io/tonicai/textual-charts -f values.yaml
+    helm install -n <your-namespace> textual oci://quay.io/tonicai/textual -f values.yaml
 
 To uninstall the chart:
 

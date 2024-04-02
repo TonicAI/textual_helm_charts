@@ -18,6 +18,10 @@ spec:
       labels:
         app: textual-ml
     spec:
+      initContainers:
+        - name: wait-for-web-before-startup
+          image: busybox
+          command: [ "sh", "-c", "until nc -z textual-api-server 443 > /dev/null; do echo Waiting for web server.; sleep 2; done;" ]
       containers:
       - securityContext:
           readOnlyRootFilesystem: true
