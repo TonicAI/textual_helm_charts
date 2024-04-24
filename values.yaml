@@ -46,6 +46,10 @@ ingress:
   class: nginx
   host: null
   labels: {}
+#  tls:
+#    - hosts:
+#        - <textual-url>
+#      secretName: <secret-name>
   # By default this chart will create an nginx ingress, however providing
   # additional annotations will disable this
   #  annotations: {}

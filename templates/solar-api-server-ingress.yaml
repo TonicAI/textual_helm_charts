@@ -39,4 +39,7 @@ spec:
       {{- if (.Values).ingress.host }}
       host: {{ .Values.ingress.host }}
       {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls: {{ toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
 {{- end }}

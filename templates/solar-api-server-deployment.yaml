@@ -164,7 +164,7 @@ spec:
             timeoutSeconds: 30
             failureThreshold: 5
         - name: vector
-          image: timberio/vector:latest-alpine
+          image: timberio/vector:latest-distroless-static
           env:
             - name: VECTOR_SELF_NODE_NAME
               valueFrom:
