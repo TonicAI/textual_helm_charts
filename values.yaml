@@ -38,6 +38,8 @@ textual_worker:
   numberOfWorkers: 1
   env: {}
 textual_ml:
+  # if using gpu, need the textual-ml-gpu image
+  # image: quay.io/tonicai/textual-ml-gpu
   env: {}
 
 
