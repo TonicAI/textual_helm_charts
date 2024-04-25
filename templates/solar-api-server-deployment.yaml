@@ -67,6 +67,13 @@ spec:
           - name: SOLAR_STATISTICS_SEED
             value: {{quote .Values.solarStatisticsSeed }}
           {{- end }}
+          {{- if .Values.openAiApiKey }}
+          - name: OPENAI_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: openai-api-key
+                key: secret
+          {{- end }}
           {{- if .Values.googleClientId }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_ID
             value: {{ .Values.googleClientId }}

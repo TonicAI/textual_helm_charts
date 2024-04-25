@@ -86,6 +86,13 @@ spec:
             - name: SOLAR_AZURE_DOC_INTELLIGENCE_ENDPOINT
               value: {{ .Values.azureDocIntelligenceEndpoint }}
             {{- end }}
+            {{- if .Values.openAiApiKey }}
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openai-api-key
+                  key: secret
+            {{- end }}
             {{- if (.Values.textual_worker).env}}
             {{- range $key, $value := .Values.textual_worker.env }}
             - name: {{ $key }}

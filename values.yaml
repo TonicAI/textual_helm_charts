@@ -65,6 +65,9 @@ serviceAccount:
 
 solarStatisticsSeed: <any-integer>
 
+# Optional, required when using using llm synthesis
+openAiApiKey: <open-ai-api-key>
+
 # OCR Credentials
 #azureDocIntelligenceKey: <key>
 #azureDocIntelligenceEndpoint: <enndpoint-url>
