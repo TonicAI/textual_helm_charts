@@ -38,6 +38,12 @@ textual_worker:
   numberOfWorkers: 1
   env: {}
 textual_ml:
+  # useGPU will determine if the ML container will use a GPU or not. If not provided, the default value is false
+  useGpu: false
+  # numberOfMlWorkers will determine how many ML containers are deployed when installing the helm chart. If using GPU, we recommend one per GPU
+  numberOfMlWorkers: 1
+  # textualMlParallelism will determine how many ML worker processes are deployed per ML container. For GPUs, we recommend 1 process per 5GB of VRAM
+  textualMlParallelism: 1
   env: {}
 
 

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: textual-ml
 spec:
-  replicas: 1
+  replicas: {{ (.Values.textual_ml).numberOfMlWorkers | default 1 }}
   selector:
     matchLabels:
       app: textual-ml
@@ -60,6 +60,10 @@ spec:
           - name: ENABLE_LOG_COLLECTION
             value: {{ .Values.enableLogCollection }}
         {{- end }}
+        {{- if (.Values.textual_ml).textualMlParallelism | quote }}
+          - name: TEXTUAL_ML_WORKERS
+            value: {{quote .Values.textual_ml.textualMlParallelism }}
+        {{- end }}
         {{- if (.Values.textual_ml).env }}
         {{- range $key, $value := .Values.textual_ml.env }}
           - name: {{ $key }}
@@ -68,10 +72,14 @@ spec:
         {{- end }}
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
+        {{- if (.Values.textual_ml).useGpu }}
+        image: quay.io/tonicai/textual-ml-gpu:{{ .Values.textualVersion }}
+        {{- else }}
         {{- if  (.Values.textual_ml).image }}
         image: {{ .Values.textual_ml.image }}:{{ .Values.textualVersion }}
         {{ else }}
         image: quay.io/tonicai/textual-ml:{{ .Values.textualVersion }}
+        {{- end }}
         {{- end }}
         imagePullPolicy: IfNotPresent
         name: textual-ml
@@ -80,6 +88,9 @@ spec:
         resources:
           limits:
             memory: "8Gi"
+            {{- if (.Values.textual_ml).useGpu }}
+            nvidia.com/gpu: "1"
+            {{- end }}
           requests:
             memory: "1Gi"
             ephemeral-storage: "1Gi"
