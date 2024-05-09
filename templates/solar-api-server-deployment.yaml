@@ -30,8 +30,10 @@ spec:
             mountPath: /usr/bin/textual/logs_public
           - name: var-logs
             mountPath: /usr/bin/textual/logs
+          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: vector-configuration
             mountPath: /usr/bin/textual/vector_config
+          {{- end }}
           - name: tmp
             mountPath: /tmp
           env:
@@ -127,7 +129,7 @@ spec:
                 name: azure-sso-client-secret
                 key: secret
           {{- end }}
-          {{- if .Values.enableLogCollection }}
+          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: ENABLE_LOG_COLLECTION
             value: {{ .Values.enableLogCollection }}
           {{- end }}
@@ -170,6 +172,7 @@ spec:
             periodSeconds: 60
             timeoutSeconds: 30
             failureThreshold: 5
+        {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
         - name: vector
           image: timberio/vector:latest-distroless-static
           env:
@@ -201,6 +204,7 @@ spec:
             - "-w"
             - "--config"
             - "/usr/bin/textual/vector_config/vector.toml"
+        {{- end }}
       restartPolicy: Always
       serviceAccountName: {{ template "textual.serviceAccountName" . }}
       imagePullSecrets:
@@ -210,10 +214,12 @@ spec:
         emptyDir: {}
       - name: var-logs
         emptyDir: {}
+      {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
       - name: vector-configuration
         emptyDir: {}
       - name: vector-working
         emptyDir: {}
+      {{- end }}
       - name: tmp
         emptyDir: {}
 status: {}
