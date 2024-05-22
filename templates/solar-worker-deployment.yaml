@@ -36,6 +36,8 @@ spec:
           {{- end }}
           - name: tmp
             mountPath: /tmp
+          - name: dotnet
+            mountPath: /.dotnet
           env:
             - name: SOLAR_SECRET
               valueFrom:
@@ -174,5 +176,7 @@ spec:
           emptyDir: { }
         {{- end }}
         - name: tmp
+          emptyDir: {}
+        - name: dotnet
           emptyDir: {}
 status: {}

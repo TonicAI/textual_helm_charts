@@ -36,6 +36,8 @@ spec:
           {{- end }}
           - name: tmp
             mountPath: /tmp
+          - name: dotnet
+            mountPath: /.dotnet
           env:
           {{- if (.Values.textual_api_server).env}}
           {{- range $key, $value := .Values.textual_api_server.env }}
@@ -221,5 +223,7 @@ spec:
         emptyDir: {}
       {{- end }}
       - name: tmp
+        emptyDir: {}
+      - name: dotnet
         emptyDir: {}
 status: {}
