@@ -175,37 +175,7 @@ spec:
             timeoutSeconds: 30
             failureThreshold: 5
         {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-        - name: vector
-          image: timberio/vector:latest-distroless-static
-          env:
-            - name: VECTOR_SELF_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: spec.nodeName
-            - name: VECTOR_SELF_POD_NAME
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: metadata.name
-            - name: VECTOR_SELF_POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: metadata.namespace
-            - name: LOG_COLLECTION_FOLDER
-              value: "/usr/bin/textual/logs_public"
-          volumeMounts:
-            - name: var-logs-public
-              mountPath: "/usr/bin/textual/logs_public"
-            - name: vector-configuration
-              mountPath: "/usr/bin/textual/vector_config"
-            - name: vector-working
-              mountPath: "/etc/textual/vector_data"
-          args:
-            - "-w"
-            - "--config"
-            - "/usr/bin/textual/vector_config/vector.toml"
+        {{- include "textual.loggingSidecar" (list $ "var-logs-public") | nindent 8 }}
         {{- end }}
       restartPolicy: Always
       serviceAccountName: {{ template "textual.serviceAccountName" . }}

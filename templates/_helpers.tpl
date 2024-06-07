@@ -64,3 +64,44 @@ Create the name of the service account to use
     {{ "" }}
 {{- end -}}
 {{- end }}
+
+{{/*
+Creates the log sharing sidecar container
+*/}}
+{{- define "textual.loggingSidecar" -}}
+{{- $root := first . }}
+{{- $values := $root.Values }}
+{{- $logVolume := index . 1 }}
+{{- $logDir := "/usr/bin/textual/logs_public" }}
+{{- $env := ($values.log_collector).env }}
+- name: vector
+  image: quay.io/tonicai/log_collector
+  imagePullPolicy: Always
+  env:
+    - name: VECTOR_SELF_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: VECTOR_SELF_POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: VECTOR_SELF_POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    - name: LOG_COLLECTION_FOLDER
+      value: "{{ $logDir }}"
+    - name: ENABLE_LOG_COLLECTION
+      value: "true"
+    {{- range $key, $value := $env }}
+    - name: {{ $key }}
+      value: {{ $value | quote }}
+    {{- end }}
+  volumeMounts:
+    - name: {{ $logVolume }}
+      mountPath: "{{ $logDir }}"
+{{- end }}
