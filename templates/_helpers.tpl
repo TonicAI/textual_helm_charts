@@ -105,3 +105,23 @@ Creates the log sharing sidecar container
     - name: {{ $logVolume }}
       mountPath: "{{ $logDir }}"
 {{- end }}
+
+{{/*
+Tolerances
+*/}}
+{{- define "textual.tolerations" -}}
+{{- $top := first . }}
+{{- $tolerations := list }}
+{{- if ($top.Values).tolerations }}
+{{- $tolerations = concat $tolerations $top.Values.tolerations }}
+{{- end }}
+{{- if (gt (len .) 1) }}
+{{- $these := (index . 1) }}
+{{- if $these }}
+{{- $tolerations = concat $tolerations $these }}
+{{- end }}
+{{- end }}
+{{- if $tolerations }}
+{{- toYaml $tolerations }}
+{{- end }}
+{{- end }}

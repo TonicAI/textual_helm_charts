@@ -2,6 +2,9 @@
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 6880 }}
 {{- $httpsPort := $ports.https | default 6443 }}
+{{- $tolerations := 
+  .Values.textual_api_server.tolerations
+}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,6 +25,8 @@ spec:
       labels:
         app: textual-api-server
     spec:
+      tolerations:
+        {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
       containers:
         - securityContext:
             readOnlyRootFilesystem: true

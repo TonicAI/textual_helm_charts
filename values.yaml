@@ -16,6 +16,10 @@ textualDatabase:
 
 textual_api_server:
   env: {}
+  tolerations: []
+    # - key: "foo"
+    #   operator: "Exists"
+    #   effect: "NoSchedule"
   # annotations to apply to the service that routes traffic to the web server
   #annotations: {}
     # By default this chart will create an internal load balancer service on
@@ -37,6 +41,10 @@ textual_worker:
   # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
   numberOfWorkers: 1
   env: {}
+  tolerations: []
+    # - key: "foo"
+    #   operator: "Exists"
+    #   effect: "NoSchedule"
 textual_ml:
   # useGPU will determine if the ML container will use a GPU or not. If not provided, the default value is false
   useGpu: false
@@ -45,6 +53,10 @@ textual_ml:
   # textualMlParallelism will determine how many ML worker processes are deployed per ML container. For GPUs, we recommend 1 process per 5GB of VRAM
   textualMlParallelism: 1
   env: {}
+  tolerations: []
+    # - key: "foo"
+    #   operator: "Exists"
+    #   effect: "NoSchedule"
 
 
 ingress:
