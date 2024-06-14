@@ -1,6 +1,9 @@
 {{- $tolerations := 
   .Values.textual_worker.tolerations
  }}
+ {{- $nodeSelector := 
+  .Values.textual_worker.nodeSelector
+ }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +24,8 @@ spec:
       labels:
         app: textual-worker
     spec:
+      nodeSelector:
+        {{- include "textual.nodeSelector" (list $ $nodeSelector) | nindent 8 }}
       tolerations:
         {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
       initContainers:

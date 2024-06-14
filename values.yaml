@@ -16,6 +16,7 @@ textualDatabase:
 
 textual_api_server:
   env: {}
+  nodeSelector: {}
   tolerations: []
     # - key: "foo"
     #   operator: "Exists"
@@ -41,6 +42,7 @@ textual_worker:
   # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
   numberOfWorkers: 1
   env: {}
+  nodeSelector: {}
   tolerations: []
     # - key: "foo"
     #   operator: "Exists"
@@ -53,6 +55,7 @@ textual_ml:
   # textualMlParallelism will determine how many ML worker processes are deployed per ML container. For GPUs, we recommend 1 process per 5GB of VRAM
   textualMlParallelism: 1
   env: {}
+  nodeSelector: {}
   tolerations: []
     # - key: "foo"
     #   operator: "Exists"

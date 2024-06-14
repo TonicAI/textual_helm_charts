@@ -125,3 +125,17 @@ Tolerances
 {{- toYaml $tolerations }}
 {{- end }}
 {{- end }}
+
+{{- define "textual.nodeSelector" -}}
+{{- $top := first . }}
+{{- $selectors := dict }}
+{{- if ($top.Values).nodeSelector }}
+{{- $selectors = merge $selectors $top.Values.nodeSelector }}
+{{- if (gt (len .) 1) }}
+{{- $selectors = merge $selectors (index . 1) }}
+{{- end }}
+{{- if $selectors }}
+{{- $selectors | toYaml }}
+{{- end }}
+{{- end }}
+{{- end }}
