@@ -1,9 +1,12 @@
-{{- $tolerations := 
+{{- $tolerations :=
   .Values.textual_ml.tolerations
 }}
-{{- $nodeSelector := 
-  .Values.textual_ml.nodeSelector
-}}
+{{- $resources := dict -}}
+{{- if .Values.textual_ml.useGpu -}}
+  {{- $resources = coalesce .Values.textual_ml.resources (dict "limits" (dict "memory" "8Gi" "nvidia.com/gpu" "1") "requests" (dict "memory" "1Gi" "ephemeral-storage" "1Gi")) -}}
+{{- else -}}
+  {{- $resources = coalesce .Values.textual_ml.resources (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "512Mi")) -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +28,7 @@ spec:
         app: textual-ml
     spec:
       nodeSelector:
-        {{- include "textual.nodeSelector" (list $ $nodeSelector) | nindent 8 }}
+        {{ .Values.textual_ml.nodeSelector | toYaml | nindent 8 }}
       tolerations:
         {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
       initContainers:
@@ -98,14 +101,7 @@ spec:
         ports:
           - containerPort: 7701
         resources:
-          limits:
-            memory: "8Gi"
-            {{- if (.Values.textual_ml).useGpu }}
-            nvidia.com/gpu: "1"
-            {{- end }}
-          requests:
-            memory: "1Gi"
-            ephemeral-storage: "1Gi"
+            {{- toYaml $resources | nindent 10 }}
         startupProbe:
           httpGet:
             path: /health

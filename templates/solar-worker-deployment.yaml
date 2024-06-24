@@ -1,9 +1,9 @@
-{{- $tolerations := 
+{{- $tolerations :=
   .Values.textual_worker.tolerations
  }}
- {{- $nodeSelector := 
-  .Values.textual_worker.nodeSelector
- }}
+{{- $resources := coalesce
+  .Values.textual_worker.resources
+  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,7 +25,7 @@ spec:
         app: textual-worker
     spec:
       nodeSelector:
-        {{- include "textual.nodeSelector" (list $ $nodeSelector) | nindent 8 }}
+        {{- toYaml $.Values.textual_worker.nodeSelector | nindent 8}}
       tolerations:
         {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
       initContainers:
@@ -123,11 +123,7 @@ spec:
           ports:
             - containerPort: 8443
           resources:
-            limits:
-              memory: "12Gi"
-            requests:
-              memory: "6Gi"
-              ephemeral-storage: "1Gi"
+            {{- toYaml $resources | nindent 12 }}
           startupProbe:
             httpGet:
               scheme: HTTPS

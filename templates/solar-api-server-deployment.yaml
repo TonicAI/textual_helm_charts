@@ -2,12 +2,15 @@
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 6880 }}
 {{- $httpsPort := $ports.https | default 6443 }}
-{{- $tolerations := 
+{{- $tolerations :=
   .Values.textual_api_server.tolerations
 }}
-{{- $nodeSelector := 
+{{- $nodeSelector :=
   .Values.textual_api_server.nodeSelector
 }}
+{{- $resources := coalesce
+  .Values.textual_api_server.resources
+  (dict "limits" (dict "memory" "3Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "512Mi")) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,7 +32,7 @@ spec:
         app: textual-api-server
     spec:
       nodeSelector:
-        {{- include "textual.nodeSelector" (list $ $nodeSelector) | nindent 8 }}
+        {{- toYaml $.Values.textual_api_server.nodeSelector | nindent 8}}
       tolerations:
         {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
       containers:
@@ -170,11 +173,7 @@ spec:
           - containerPort: {{ $httpsPort }}
             name: "https"
           resources:
-            limits:
-              memory: "3Gi"
-            requests:
-              memory: "512Mi"
-              ephemeral-storage: "512Mi"
+            {{- toYaml $resources | nindent 12 }}
           startupProbe:
             httpGet:
               scheme: HTTPS
