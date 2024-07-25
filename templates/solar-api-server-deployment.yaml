@@ -146,7 +146,7 @@ spec:
           {{- end }}
           {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: ENABLE_LOG_COLLECTION
-            value: {{ .Values.enableLogCollection }}
+            value: {{ .Values.enableLogCollection | quote }}
           {{- end }}
           - name: SOLAR_PY_URL
             value: https://textual-ml:7701

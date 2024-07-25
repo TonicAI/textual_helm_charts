@@ -73,7 +73,7 @@ spec:
             value: {{ .Values.textualDatabase.host }}
         {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: ENABLE_LOG_COLLECTION
-            value: {{ .Values.enableLogCollection }}
+            value: {{ .Values.enableLogCollection | quote }}
         {{- end }}
         {{- if (.Values.textual_ml).textualMlParallelism | quote }}
           - name: TEXTUAL_ML_WORKERS

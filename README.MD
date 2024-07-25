@@ -98,7 +98,7 @@ Deploy Tonic Textual:
 
 ### Validate the deployment
 
-Use kubectl get all -n <namespace_name> to check that the Tonic pods are running:
+Use kubectl get all -n <namespace_name> to check that the Textual pods are running:
 
 The deployment may take a few minutes with pods in the ContainerCreating status. Re-run the command to get an updated status. Once all pods have a status of Running and deployments show READY as 1/1, Tonic should be available shortly after via browser at the URL/IP listed in the EXTERNAL-IP field next to the load balancer service. If you have modified the Helm chart ingress configuration, then this will vary. While not required, it's recommended to set up a more user-friendly domain routing to the Tonic web application.
 

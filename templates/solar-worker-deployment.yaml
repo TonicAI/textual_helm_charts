@@ -87,7 +87,7 @@ spec:
             {{- end }}
             {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
             - name: ENABLE_LOG_COLLECTION
-              value: {{ .Values.enableLogCollection }}
+              value: {{ .Values.enableLogCollection | quote }}
             {{- end }}
             {{- if .Values.azureDocIntelligenceKey }}
             - name: SOLAR_AZURE_DOC_INTELLIGENCE_KEY
