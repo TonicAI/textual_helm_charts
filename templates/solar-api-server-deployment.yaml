@@ -158,6 +158,11 @@ spec:
             value: {{ $httpsPort | quote }}
           - name: SOLAR_HTTPS_ONLY
             value: {{ $httpsOnly | quote }}
+          - name: SOLAR_LICENSE
+            valueFrom:
+              secretKeyRef:
+                name: solar-license-secret
+                key: secret
           {{- if  (.Values.textual_api_server).image }}
           image: {{ .Values.textual_api_server.image }}:{{ .Values.textualVersion }}
           {{ else }}

@@ -3,6 +3,7 @@ environmentName: <company-name>
 # You can set this to a specific Solar version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Solar.
 textualVersion: "<version-number>"
 
+solarLicense: <license>
 textualEncryptionSecret: <encryption-key>
 
 # textualDatabase is the postgres database that will hold information about your workspace.

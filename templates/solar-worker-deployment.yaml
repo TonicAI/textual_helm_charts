@@ -48,7 +48,12 @@ spec:
             mountPath: /tmp
           - name: dotnet
             mountPath: /.dotnet
-          env:
+          env: 
+            - name: SOLAR_LICENSE
+              valueFrom:
+                secretKeyRef:
+                  name: solar-license-secret
+                  key: secret
             - name: SOLAR_SECRET
               valueFrom:
                 secretKeyRef:
