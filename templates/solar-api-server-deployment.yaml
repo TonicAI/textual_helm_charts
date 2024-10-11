@@ -1,5 +1,5 @@
 {{- $ports := (.Values.textual_api_server).ports | default dict }}
-{{- $httpsOnly := $ports.httpsOnly | default true }}
+{{- $httpsOnly := hasKey $ports "httpsOnly" | ternary $ports.httpsOnly true }}
 {{- $httpPort := $ports.http | default 6880 }}
 {{- $httpsPort := $ports.https | default 6443 }}
 {{- $tolerations :=
