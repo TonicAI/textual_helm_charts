@@ -135,7 +135,7 @@ spec:
           {{- end }}
           {{- if .Values.azureTenantId }}
           - name: SOLAR_SSO_AZURE_TENANT_ID
-            value: {{ .Values.azureClientId }}
+            value: {{ .Values.azureTenantId }}
           {{- end }}
           {{- if .Values.azureClientSecret }}
           - name: SOLAR_SSO_AZURE_CLIENT_SECRET
