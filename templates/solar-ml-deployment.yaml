@@ -91,7 +91,7 @@ spec:
         image: quay.io/tonicai/textual-ml-gpu:{{ .Values.textualVersion }}
         {{- else }}
         {{- if  (.Values.textual_ml).image }}
-        image: {{ .Values.textual_ml.image }}:{{ .Values.textualVersion }}
+        image: {{ .Values.textual_ml.image }}:{{ .Values.textual_ml.version | default .Values.textualVersion }}
         {{ else }}
         image: quay.io/tonicai/textual-ml:{{ .Values.textualVersion }}
         {{- end }}
