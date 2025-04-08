@@ -10,7 +10,7 @@
 }}
 {{- $resources := coalesce
   .Values.textual_api_server.resources
-  (dict "limits" (dict "memory" "3Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "512Mi")) -}}
+  (dict "limits" (dict "memory" "3Gi" "cpu" "0.5") "requests" (dict "memory" "512Mi" "cpu" "0.25" "ephemeral-storage" "512Mi")) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
