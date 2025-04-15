@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: textual-asr
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: textual-asr
+spec:
+  selector:
+    app: textual-asr
+  ports:
+    - port: 7703
+status:
+  loadBalancer: {}

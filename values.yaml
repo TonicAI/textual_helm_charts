@@ -5,6 +5,8 @@ textualVersion: "<version-number>"
 
 solarLicense: <license>
 textualEncryptionSecret: <encryption-key>
+asr:
+  create: false
 
 # textualDatabase is the postgres database that will hold information about your workspace.
 textualDatabase:
@@ -61,6 +63,13 @@ textual_ml:
     # - key: "foo"
     #   operator: "Exists"
     #   effect: "NoSchedule"
+textual_asr:
+  env: {}
+  nodeSelector: {}
+  tolerations: []
+    # - key: "foo"
+    #   operator: "Exists"
+  #   effect: "NoSchedule"
 
 
 ingress:

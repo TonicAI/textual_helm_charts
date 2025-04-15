@@ -1,0 +1,74 @@
+{{- if .Values.asr.create }}
+{{- $tolerations := .Values.textual_asr.tolerations }}
+{{- $resources := coalesce .Values.textual_asr.resources (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "512Mi")) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: textual-asr
+  name: textual-asr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: textual-asr
+  strategy:
+    type: {{ .Values.deployStrategy | quote | default "Recreate" }}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: textual-asr
+    spec:
+      nodeSelector:
+        {{ .Values.textual_asr.nodeSelector | toYaml | nindent 8 }}
+      tolerations:
+        {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
+      containers:
+      - securityContext:
+          readOnlyRootFilesystem: true
+        {{- if  (.Values.textual_asr).image }}
+        image: {{ .Values.textual_asr.image }}:{{ .Values.textual_asr.version | default .Values.textualVersion }}
+        {{ else }}
+        image: quay.io/tonicai/textual-asr:{{ .Values.textualVersion }}
+        {{- end }}
+        imagePullPolicy: IfNotPresent
+        name: textual-asr
+        ports:
+          - containerPort: 7703
+        resources:
+            {{- toYaml $resources | nindent 10 }}
+        volumeMounts:
+          - name: var-logs-public
+            mountPath: /app/logs_public
+          - name: var-logs
+            mountPath: /app/logs
+          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
+          - name: vector-configuration
+            mountPath: /app/vector_config
+          {{- end }}
+          - name: tmp
+            mountPath: /tmp
+        env: []
+        envFrom: []
+      {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
+      {{- include "textual.loggingSidecar" (list $ "var-logs-public") | nindent 6 }}
+      {{- end }}
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: textual-image-pull-secret
+      serviceAccountName: {{ template "textual.serviceAccountName" . }}
+      volumes:
+        - name: var-logs-public
+          emptyDir: {}
+        - name: var-logs
+          emptyDir: {}
+        {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
+        - name: vector-configuration
+          emptyDir: {}
+        - name: vector-working
+          emptyDir: {}
+        {{- end }}
+        - name: tmp
+          emptyDir: {}
+  {{- end }}
