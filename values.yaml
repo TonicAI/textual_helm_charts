@@ -126,6 +126,12 @@ openAiApiKey: <open-ai-api-key>
 #azureTenantId: <tenant-id>
 #azureClientSecret: <client-secret>
 
+# Keycloak SSO Config
+# -----------------
+#keycloakClientId: <client-id>
+#keycloakClientSecret: <client-secret>
+#keycloakAuthority: <authority-url>
+
 # Deployment Strategy: This can be set to either "RollingUpdate" or "Recreate". If not provided, the default value
 # is "Recreate". "RollingUpdate" will perform a rolling update of the deployment similar to a blue/green
 # deployment and thus requires additional resources as both old and new versions will be running simultaneously

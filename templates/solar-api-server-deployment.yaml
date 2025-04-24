@@ -144,6 +144,21 @@ spec:
                 name: azure-sso-client-secret
                 key: secret
           {{- end }}
+          {{- if .Values.keycloakClientId }}
+          - name: SOLAR_SSO_KEYCLOAK_CLIENT_ID
+            value: {{ .Values.keycloakClientId }}
+          {{- end }}
+          {{- if .Values.keycloakClientSecret }}
+          - name: SOLAR_SSO_KEYCLOAK_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-sso-client-secret
+                key: secret
+          {{- end }}
+          {{- if .Values.keycloakAuthority }}
+          - name: SOLAR_SSO_KEYCLOAK_AUTHORITY
+            value: {{ .Values.keycloakAuthority }}
+          {{- end }}
           {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: ENABLE_LOG_COLLECTION
             value: {{ .Values.enableLogCollection | quote }}
