@@ -3,7 +3,7 @@
  }}
 {{- $resources := coalesce
   .Values.textual_worker.resources
-  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
+  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "cpu" "0.25" "ephemeral-storage" "1Gi")) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,7 +48,7 @@ spec:
             mountPath: /tmp
           - name: dotnet
             mountPath: /.dotnet
-          env: 
+          env:
             - name: SOLAR_LICENSE
               valueFrom:
                 secretKeyRef:
