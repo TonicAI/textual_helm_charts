@@ -20,20 +20,21 @@ textualDatabase:
 textual_api_server:
   env: {}
   nodeSelector: {}
-  tolerations: []
+  tolerations:
+    []
     # - key: "foo"
     #   operator: "Exists"
     #   effect: "NoSchedule"
   # annotations to apply to the service that routes traffic to the web server
   #annotations: {}
-    # By default this chart will create an internal load balancer service on
-    # EKS and AKS; however, providing additional annotations will disable this
-    # If additional annotations are applied and you need a load balancer to
-    # the Tonic installation see documentation from your cloud provider
-    # AWS: https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html
-    #      https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/
-    # Azure: https://learn.microsoft.com/en-us/azure/aks/internal-lb
-    # GCP: https://cloud.google.com/kubernetes-engine/docs/concepts/service-load-balancer
+  # By default this chart will create an internal load balancer service on
+  # EKS and AKS; however, providing additional annotations will disable this
+  # If additional annotations are applied and you need a load balancer to
+  # the Tonic installation see documentation from your cloud provider
+  # AWS: https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html
+  #      https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/
+  # Azure: https://learn.microsoft.com/en-us/azure/aks/internal-lb
+  # GCP: https://cloud.google.com/kubernetes-engine/docs/concepts/service-load-balancer
   ports:
     httpsOnly: true
     https: 443
@@ -46,7 +47,8 @@ textual_worker:
   numberOfWorkers: 1
   env: {}
   nodeSelector: {}
-  tolerations: []
+  tolerations:
+    []
     # - key: "foo"
     #   operator: "Exists"
     #   effect: "NoSchedule"
@@ -59,18 +61,19 @@ textual_ml:
   textualMlParallelism: 1
   env: {}
   nodeSelector: {}
-  tolerations: []
+  tolerations:
+    []
     # - key: "foo"
     #   operator: "Exists"
     #   effect: "NoSchedule"
 textual_asr:
   env: {}
   nodeSelector: {}
-  tolerations: []
+  tolerations:
+    []
     # - key: "foo"
     #   operator: "Exists"
   #   effect: "NoSchedule"
-
 
 ingress:
   enabled: false
@@ -81,9 +84,9 @@ ingress:
 #    - hosts:
 #        - <textual-url>
 #      secretName: <secret-name>
-  # By default this chart will create an nginx ingress, however providing
-  # additional annotations will disable this
-  #  annotations: {}
+# By default this chart will create an nginx ingress, however providing
+# additional annotations will disable this
+#  annotations: {}
 
 # This value will be provided to you by Solar and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
