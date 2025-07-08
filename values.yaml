@@ -110,6 +110,9 @@ openAiApiKey: <open-ai-api-key>
 # -----------------
 #googleClientId: <client-id>
 #googleClientSecret: <client-secret>
+# -- Optional --
+# Must be set to import groups
+#googleGroupFilterRegex: <regex-pattern-for-groups>
 
 # Okta SSO Config
 # -----------------
@@ -117,6 +120,9 @@ openAiApiKey: <open-ai-api-key>
 #oktaClientId: <client-id>
 #oktaDomain: <sso-domain>
 #oktaIdentityProviderId: <identity-provider-id>
+# -- Optional --
+# Must be set to import groups
+#oktaGroupFilterRegex: <regex-pattern-for-groups>
 
 # Github SSO Config
 # -----------------
@@ -128,12 +134,33 @@ openAiApiKey: <open-ai-api-key>
 #azureClientId: <client-id>
 #azureTenantId: <tenant-id>
 #azureClientSecret: <client-secret>
+# -- Optional --
+# Must be set to import groups
+#azureGroupFilterRegex: <regex-pattern-for-groups>
 
 # Keycloak SSO Config
 # -----------------
 #keycloakClientId: <client-id>
 #keycloakClientSecret: <client-secret>
 #keycloakAuthority: <authority-url>
+# -- Optional --
+# Must be set to import groups
+#keycloakGroupFilterRegex: <regex-pattern-for-groups>
+
+# OIDC SSO Config
+# -----------------
+#oidcAuthority: <oidc-authority-url>
+#oidcClientId: <oidc-client-id>
+#oidcClientSecret: <oidc-client-secret>
+# -- Optional --
+# The space-delimited list of scopes to request from the OIDC SSO provider. Defaults to "openid profile email". If necessary, include a scope that corresponds to groups.
+#oidcScopes: <oidc-scopes>
+#oidcEmailClaimName: <email-claim-name>
+#oidcFirstNameClaimName: <first-name-claim-name>
+#oidcLastNameClaimName: <last-name-claim-name>
+#oidcGroupsClaimName: <groups-claim-name>
+# Must be set to import groups
+#oidcGroupFilterRegex: <regex-pattern-for-groups>
 
 # Deployment Strategy: This can be set to either "RollingUpdate" or "Recreate". If not provided, the default value
 # is "Recreate". "RollingUpdate" will perform a rolling update of the deployment similar to a blue/green

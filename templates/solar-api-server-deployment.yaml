@@ -102,6 +102,10 @@ spec:
                 name: google-sso-client-secret
                 key: secret
           {{- end }}
+          {{- if .Values.googleGroupFilterRegex }}
+          - name: SOLAR_SSO_GOOGLE_GROUP_FILTER_REGEX
+            value: {{ .Values.googleGroupFilterRegex }}
+          {{- end }}
           {{- if .Values.githubClientId }}
           - name: SOLAR_SSO_GITHUB_CLIENT_ID
             value: {{ .Values.githubClientId }}
@@ -129,6 +133,10 @@ spec:
           - name: SOLAR_SSO_OKTA_IDENTITY_PROVIDER_ID
             value: {{ .Values.oktaIdentityProviderId }}
           {{- end }}
+          {{- if .Values.oktaGroupFilterRegex }}
+          - name: SOLAR_SSO_OKTA_GROUP_FILTER_REGEX
+            value: {{ .Values.oktaGroupFilterRegex }}
+          {{- end }}
           {{- if .Values.azureClientId }}
           - name: SOLAR_SSO_AZURE_CLIENT_ID
             value: {{ .Values.azureClientId }}
@@ -144,6 +152,10 @@ spec:
                 name: azure-sso-client-secret
                 key: secret
           {{- end }}
+          {{- if .Values.azureGroupFilterRegex }}
+          - name: SOLAR_SSO_AZURE_GROUP_FILTER_REGEX
+            value: {{ .Values.azureGroupFilterRegex }}
+          {{- end }}
           {{- if .Values.keycloakClientId }}
           - name: SOLAR_SSO_KEYCLOAK_CLIENT_ID
             value: {{ .Values.keycloakClientId }}
@@ -158,6 +170,46 @@ spec:
           {{- if .Values.keycloakAuthority }}
           - name: SOLAR_SSO_KEYCLOAK_AUTHORITY
             value: {{ .Values.keycloakAuthority }}
+          {{- end }}
+          {{- if .Values.keycloakGroupFilterRegex }}
+          - name: SOLAR_SSO_KEYCLOAK_GROUP_FILTER_REGEX
+            value: {{ .Values.keycloakGroupFilterRegex }}
+          {{- end }}
+          {{- if .Values.oidcAuthority }}
+          - name: SOLAR_SSO_OIDC_AUTHORITY
+            value: {{ .Values.oidcAuthority }}
+          {{- end }}
+          {{- if .Values.oidcClientId }}
+          - name: SOLAR_SSO_OIDC_CLIENT_ID
+            value: {{ .Values.oidcClientId }}
+          {{- end }}
+          {{- if .Values.oidcClientSecret }}
+          - name: SOLAR_SSO_OIDC_CLIENT_SECRET
+            value: {{ .Values.oidcClientSecret }}
+          {{- end }}
+          {{- if .Values.oidcScopes }}
+          - name: SOLAR_SSO_OIDC_SCOPES
+            value: {{ .Values.oidcScopes }}
+          {{- end }}
+          {{- if .Values.oidcEmailClaimName }}
+          - name: SOLAR_SSO_OIDC_EMAIL_CLAIM_NAME
+            value: {{ .Values.oidcEmailClaimName }}
+          {{- end }}
+          {{- if .Values.oidcFirstNameClaimName }}
+          - name: SOLAR_SSO_OIDC_FIRST_NAME_CLAIM_NAME
+            value: {{ .Values.oidcFirstNameClaimName }}
+          {{- end }}
+          {{- if .Values.oidcLastNameClaimName }}
+          - name: SOLAR_SSO_OIDC_LAST_NAME_CLAIM_NAME
+            value: {{ .Values.oidcLastNameClaimName }}
+          {{- end }}
+          {{- if .Values.oidcGroupsClaimName }}
+          - name: SOLAR_SSO_OIDC_GROUPS_CLAIM_NAME
+            value: {{ .Values.oidcGroupsClaimName }}
+          {{- end }}
+          {{- if .Values.oidcGroupFilterRegex }}
+          - name: SOLAR_SSO_OIDC_GROUP_FILTER_REGEX
+            value: {{ .Values.oidcGroupFilterRegex }}
           {{- end }}
           {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: ENABLE_LOG_COLLECTION
