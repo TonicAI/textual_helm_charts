@@ -84,6 +84,10 @@ spec:
           - name: SOLAR_STATISTICS_SEED
             value: {{quote .Values.solarStatisticsSeed }}
           {{- end }}
+          {{- if .Values.solarAuthRpmLimit }}
+          - name: SOLAR_AUTH_RPM_LIMIT
+            value: {{quote .Values.solarAuthRpmLimit }}
+          {{- end }}
           {{- if .Values.openAiApiKey }}
           - name: OPENAI_API_KEY
             valueFrom:
