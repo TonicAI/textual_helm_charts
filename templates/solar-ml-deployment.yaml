@@ -27,6 +27,16 @@ spec:
       labels:
         app: textual-ml
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: textual-ml
+              namespaceSelector: {} # matches all namespaces
+              topologyKey: "kubernetes.io/hostname"
       nodeSelector:
         {{ .Values.textual_ml.nodeSelector | toYaml | nindent 8 }}
       tolerations:
