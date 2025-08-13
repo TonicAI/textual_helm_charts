@@ -42,6 +42,8 @@ textual_api_server:
   # supported values are LoadBalancer, ClusterIP and NodePort. LoadBalancer is
   # the default if this isn't provided
   service_type: "LoadBalancer"
+  # volumes:
+  # volumeMounts:
 textual_worker:
   # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
   numberOfWorkers: 1
@@ -52,6 +54,8 @@ textual_worker:
     # - key: "foo"
     #   operator: "Exists"
     #   effect: "NoSchedule"
+  # volumes:
+  # volumeMounts:
 textual_ml:
   # useGPU will determine if the ML container will use a GPU or not. If not provided, the default value is false
   useGpu: false

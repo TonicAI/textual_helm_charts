@@ -39,6 +39,9 @@ spec:
         - securityContext:
             readOnlyRootFilesystem: true
           volumeMounts:
+            {{- if $.Values.textual_api_server.volumeMounts }}
+            {{- toYaml $.Values.textual_api_server.volumeMounts | nindent 10 }}
+            {{- end }}
           - name: var-logs-public
             mountPath: /usr/bin/textual/logs_public
           - name: var-logs
@@ -267,6 +270,9 @@ spec:
       imagePullSecrets:
         - name: textual-image-pull-secret
       volumes:
+        {{- if $.Values.textual_api_server.volumes }}
+        {{- toYaml $.Values.textual_api_server.volumes | nindent 8 }}
+        {{- end }}
       - name: var-logs-public
         emptyDir: {}
       - name: var-logs
