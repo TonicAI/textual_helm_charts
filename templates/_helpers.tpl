@@ -75,7 +75,11 @@ Creates the log sharing sidecar container
 {{- $logDir := "/usr/bin/textual/logs_public" }}
 {{- $env := ($values.log_collector).env }}
 - name: vector
+  {{- if  ($values.log_collector).image }}
+  image: {{ $values.log_collector.image }}
+  {{ else }}
   image: quay.io/tonicai/log_collector
+  {{ end -}}
   imagePullPolicy: Always
   env:
     - name: VECTOR_SELF_NODE_NAME
@@ -139,3 +143,15 @@ Tolerances
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Select the busybox image
+*/}}
+{{- define "textual.busyboxImage" -}}
+{{- if .Values.busyboxImage }}
+{{- .Values.busyboxImage | indent 1 -}}
+{{ else }}
+{{- print " busybox" -}}
+{{ end -}}
+{{- end }}
+

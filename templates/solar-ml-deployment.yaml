@@ -43,7 +43,7 @@ spec:
         {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
       initContainers:
         - name: wait-for-web-before-startup
-          image: busybox
+          image: {{- include "textual.busyboxImage" . }}
           command: [ "sh", "-c", "until nc -z textual-api-server 443 > /dev/null; do echo Waiting for web server.; sleep 2; done;" ]
       containers:
       - securityContext:

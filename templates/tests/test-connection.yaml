@@ -9,7 +9,7 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: {{- include "textual.busyboxImage" . }}
       command: ['wget']
       args: ['textual-api-server:443']
   restartPolicy: Never
