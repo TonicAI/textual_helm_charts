@@ -271,7 +271,7 @@ spec:
         - name: textual-image-pull-secret
       volumes:
         {{- if $.Values.textual_api_server.volumes }}
-        {{- toYaml $.Values.textual_api_server.volumes | nindent 8 }}
+        {{- toYaml $.Values.textual_api_server.volumes | nindent 6 }}
         {{- end }}
       - name: var-logs-public
         emptyDir: {}
