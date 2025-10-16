@@ -3,7 +3,7 @@
  }}
 {{- $resources := coalesce
   .Values.textual_worker.resources
-  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "cpu" "0.25" "ephemeral-storage" "1Gi")) -}}
+  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "8Gi" "cpu" "4" "ephemeral-storage" "1Gi")) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
