@@ -15,6 +15,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-next-upstream-timeout: "3600"
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
   {{- end }}
   {{- if .Values.ingress.labels }}
   labels:

@@ -4,7 +4,9 @@ metadata:
   name: textual-asr
   namespace: {{ .Release.Namespace }}
   labels:
-    app: textual-asr
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-asr")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   selector:
     app: textual-asr

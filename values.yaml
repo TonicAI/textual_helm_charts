@@ -17,6 +17,17 @@ textualDatabase:
   password: <password>
   sslMode: Require
 
+
+# Optional Labels to add to all resources - if there is a conflict we use allLabels
+# allLabels: {
+#   "owner": "example"
+# }
+# Optional Annotations to add to all resources
+# allAnnotations: {
+#   "maintainer": "example.com",
+#   "environment": "test"
+# }
+
 textual_api_server:
   env: {}
   nodeSelector: {}

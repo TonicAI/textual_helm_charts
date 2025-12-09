@@ -5,7 +5,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: textual-asr
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-asr")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
   name: textual-asr
 spec:
   replicas: 1
@@ -18,7 +20,9 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        app: textual-asr
+        {{- include "textual.allLabels" (list $ (dict "app" "textual-asr")) | nindent 8 }}
+      annotations:
+        {{- include "textual.allAnnotations" (list $) | nindent 8 }}
     spec:
       nodeSelector:
         {{ .Values.textual_asr.nodeSelector | toYaml | nindent 8 }}

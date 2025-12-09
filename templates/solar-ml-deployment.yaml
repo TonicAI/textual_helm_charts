@@ -13,7 +13,9 @@ metadata:
   name: textual-ml
   namespace: {{ .Release.Namespace }}
   labels:
-    app: textual-ml
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-ml")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   replicas: {{ (.Values.textual_ml).numberOfMlWorkers | default 1 }}
   selector:
@@ -25,7 +27,9 @@ spec:
   template:
     metadata:
       labels:
-        app: textual-ml
+        {{- include "textual.allLabels" (list $ (dict "app" "textual-ml")) | nindent 8 }}
+      annotations:
+        {{- include "textual.allAnnotations" (list $) | nindent 8 }}
     spec:
       affinity:
         podAntiAffinity:
@@ -98,13 +102,17 @@ spec:
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
         {{- if (.Values.textual_ml).useGpu }}
-        image: quay.io/tonicai/textual-ml-gpu:{{ .Values.textualVersion }}
-        {{- else }}
-        {{- if  (.Values.textual_ml).image }}
+          {{- if (.Values.textual_ml).image }}
         image: {{ .Values.textual_ml.image }}:{{ .Values.textual_ml.version | default .Values.textualVersion }}
-        {{ else }}
+          {{- else }}
+        image: quay.io/tonicai/textual-ml-gpu:{{ .Values.textualVersion }}
+          {{- end }}
+        {{- else }}
+          {{- if (.Values.textual_ml).image }}
+        image: {{ .Values.textual_ml.image }}:{{ .Values.textual_ml.version | default .Values.textualVersion }}
+          {{- else }}
         image: quay.io/tonicai/textual-ml:{{ .Values.textualVersion }}
-        {{- end }}
+          {{- end }}
         {{- end }}
         imagePullPolicy: IfNotPresent
         name: textual-ml

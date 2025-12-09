@@ -4,7 +4,9 @@ metadata:
   name: textual-ml
   namespace: {{ .Release.Namespace }}
   labels:
-    app: textual-ml
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-ml")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   selector:
     app: textual-ml

@@ -15,7 +15,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: textual-api-server
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-api-server")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
   name: textual-api-server
   namespace: {{ .Release.Namespace }}
 spec:
@@ -29,7 +31,9 @@ spec:
   template:
     metadata:
       labels:
-        app: textual-api-server
+        {{- include "textual.allLabels" (list $ (dict "app" "textual-api-server")) | nindent 8 }}
+      annotations:
+        {{- include "textual.allAnnotations" (list $) | nindent 8 }}
     spec:
       nodeSelector:
         {{- toYaml $.Values.textual_api_server.nodeSelector | nindent 8}}

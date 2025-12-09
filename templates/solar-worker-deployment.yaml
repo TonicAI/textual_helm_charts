@@ -8,7 +8,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: textual-worker
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-worker")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
   name: textual-worker
   namespace: {{ .Release.Namespace }}
 spec:
@@ -22,7 +24,9 @@ spec:
   template:
     metadata:
       labels:
-        app: textual-worker
+        {{- include "textual.allLabels" (list $ (dict "app" "textual-worker")) | nindent 8 }}
+      annotations:
+        {{- include "textual.allAnnotations" (list $) | nindent 8 }}
     spec:
       nodeSelector:
         {{- toYaml $.Values.textual_worker.nodeSelector | nindent 8}}

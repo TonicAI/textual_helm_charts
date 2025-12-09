@@ -10,6 +10,7 @@ metadata:
 {{- if  (.Values.textual_api_server).annotations }}
   annotations:
   {{- toYaml .Values.textual_api_server.annotations | nindent 4 }}
+  {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 {{- else }}
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-internal: "true"
@@ -17,9 +18,10 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
     service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 {{- end }}
   labels:
-    app: textual-api-server
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-api-server")) | nindent 4 }}
 spec:
   ports:
 {{- if not $httpsOnly }}

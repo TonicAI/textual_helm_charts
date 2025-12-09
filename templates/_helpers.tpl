@@ -51,6 +51,65 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Combine all labels: chart-wide (.Values.allLabels)
+Usage:
+  {{- include "textual.allLabels" (list $ (dict "app" "my-app")) | nindent 4 }}
+*/}}
+{{- define "textual.allLabels" -}}
+{{- $top := first . -}}
+{{- $labels := dict -}}
+
+{{/* Merge global/allLabels first */}}
+{{- if $top.Values.allLabels -}}
+  {{- $labels = mergeOverwrite $labels $top.Values.allLabels -}}
+{{- end -}}
+
+{{/* Merge any labels passed into the helper */}}
+{{- if (gt (len .) 1) -}}
+  {{- $these := (index . 1) -}}
+  {{- $labels = mergeOverwrite $labels $these -}}
+{{- end -}}
+
+{{/* Sort keys for deterministic output */}}
+{{- $keys := keys $labels | sortAlpha -}}
+{{- $yamlStrings := list -}}
+{{- range $k := $keys -}}
+  {{- $v := index $labels $k -}}
+  {{- $yamlStrings = append $yamlStrings (printf "%s: %q" $k $v) -}}
+{{- end -}}
+
+{{- join "\n" $yamlStrings -}}
+{{- end -}}
+
+{{/*
+Combine all annotations: chart-wide (.Values.allAnnotations)
+Usage:
+  {{- include "textual.allAnnotations" (list $ (dict "key" "value")) | nindent 4 }}
+*/}}
+{{- define "textual.allAnnotations" -}}
+{{- $top := first . -}}
+{{- $annotations := dict -}}
+
+{{- if $top.Values.allAnnotations -}}
+  {{- $annotations = mergeOverwrite $annotations $top.Values.allAnnotations -}}
+{{- end -}}
+
+{{- if (gt (len .) 1) -}}
+  {{- $these := (index . 1) -}}
+  {{- $annotations = mergeOverwrite $annotations $these -}}
+{{- end -}}
+
+{{- $keys := keys $annotations | sortAlpha -}}
+{{- $yamlStrings := list -}}
+{{- range $k := $keys -}}
+  {{- $v := index $annotations $k -}}
+  {{- $yamlStrings = append $yamlStrings (printf "%s: %q" $k $v) -}}
+{{- end -}}
+
+{{- join "\n" $yamlStrings -}}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "textual.serviceAccountName" -}}
