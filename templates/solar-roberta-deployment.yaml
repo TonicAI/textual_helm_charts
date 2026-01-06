@@ -1,0 +1,139 @@
+{{- $tolerations :=
+  .Values.textual_roberta.tolerations
+}}
+{{- $resources := dict -}}
+{{- if .Values.textual_roberta.useGpu -}}
+  {{- $resources = coalesce .Values.textual_roberta.resources (dict "limits" (dict "memory" "8Gi" "nvidia.com/gpu" "1") "requests" (dict "memory" "2Gi" "cpu" "2" "ephemeral-storage" "1Gi")) -}}
+{{- else -}}
+  {{- $resources = coalesce .Values.textual_roberta.resources (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "2Gi" "cpu" "2" "ephemeral-storage" "512Mi")) -}}
+{{- end -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: textual-roberta
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: textual-roberta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: textual-roberta
+  strategy:
+    type: {{ .Values.deployStrategy | quote | default "Recreate" }}
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: textual-roberta
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: textual-roberta
+              namespaceSelector: {} # matches all namespaces
+              topologyKey: "kubernetes.io/hostname"
+      nodeSelector:
+        {{ .Values.textual_roberta.nodeSelector | toYaml | nindent 8 }}
+      tolerations:
+        {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
+      initContainers:
+        - name: wait-for-web-before-startup
+          image: {{- include "textual.busyboxImage" . }}
+          command: [ "sh", "-c", "until nc -z textual-api-server 443 > /dev/null; do echo Waiting for web server.; sleep 2; done;" ]
+      containers:
+      - securityContext:
+          readOnlyRootFilesystem: true
+        volumeMounts:
+          - name: var-logs-public
+            mountPath: /usr/bin/textual/logs_public
+          - name: var-logs
+            mountPath: /usr/bin/textual/logs
+          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
+          - name: vector-configuration
+            mountPath: /usr/bin/textual/vector_config
+          {{- end }}
+          - name: supervisor-run
+            mountPath: /var/log/supervisor
+          - name: supervisor-log
+            mountPath: /var/run/supervisor
+          - name: custom-models
+            mountPath: /usr/bin/textual/custom_models
+          - name: tmp
+            mountPath: /tmp
+        env:
+          - name: SOLAR_DB_DATABASE
+            value: {{ .Values.textualDatabase.dbName }}
+          - name: SOLAR_DB_USERNAME
+            value: {{ .Values.textualDatabase.user }}
+          - name: SOLAR_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: textual-db-password
+                key: password
+          - name: SOLAR_DB_PORT
+            value: {{quote .Values.textualDatabase.port }}
+          - name: SOLAR_DB_SSLMODE
+            value: {{ .Values.textualDatabase.sslMode }}
+          - name: SOLAR_DB_HOST
+            value: {{ .Values.textualDatabase.host }}
+        {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
+          - name: ENABLE_LOG_COLLECTION
+            value: {{ .Values.enableLogCollection | quote }}
+        {{- end }}
+          - name: ENVIRONMENT_NAME
+            value: {{ .Values.environmentName }}
+        {{- if (.Values.textual_roberta).useGpu }}
+        image: quay.io/tonicai/textual-roberta-gpu:{{ .Values.textualVersion }}
+        {{- else }}
+        {{- if  (.Values.textual_roberta).image }}
+        image: {{ .Values.textual_roberta.image }}:{{ .Values.textual_roberta.version | default .Values.textualVersion }}
+        {{ else }}
+        image: quay.io/tonicai/textual-roberta:{{ .Values.textualVersion }}
+        {{- end }}
+        {{- end }}
+        imagePullPolicy: IfNotPresent
+        name: textual-roberta
+        ports:
+          - containerPort: 8801
+        resources:
+            {{- toYaml $resources | nindent 10 }}
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8801
+            scheme: HTTPS
+          initialDelaySeconds: 5
+          periodSeconds: 60
+          timeoutSeconds: 30
+          failureThreshold: 5
+      {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
+      {{- include "textual.loggingSidecar" (list $ "var-logs-public") | nindent 6 }}
+      {{- end }}
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: textual-image-pull-secret
+      serviceAccountName: {{ template "textual.serviceAccountName" . }}
+      volumes:
+        - name: var-logs-public
+          emptyDir: {}
+        - name: var-logs
+          emptyDir: {}
+        {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
+        - name: vector-configuration
+          emptyDir: { }
+        - name: vector-working
+          emptyDir: { }
+        {{- end }}
+        - name: supervisor-run
+          emptyDir: {}
+        - name: supervisor-log
+          emptyDir: {}
+        - name: custom-models
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

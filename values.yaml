@@ -81,6 +81,16 @@ textual_ml:
     # - key: "foo"
     #   operator: "Exists"
     #   effect: "NoSchedule"
+textual_roberta:
+  # useGPU will determine if the ML container will use a GPU or not. If not provided, the default value is false
+  useGpu: false
+  env: {}
+  nodeSelector: {}
+  tolerations:
+    []
+    # - key: "foo"
+    #   operator: "Exists"
+  #   effect: "NoSchedule"
 textual_asr:
   env: {}
   nodeSelector: {}
