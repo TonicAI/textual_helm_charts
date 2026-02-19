@@ -58,6 +58,9 @@ spec:
             mountPath: /tmp
           - name: dotnet
             mountPath: /.dotnet
+          - name: lucene-index
+            mountPath: /.lucene-index
+            readOnly: true
           env:
           {{- if (.Values.textual_api_server).env}}
           {{- range $key, $value := .Values.textual_api_server.env }}
@@ -291,4 +294,11 @@ spec:
         emptyDir: {}
       - name: dotnet
         emptyDir: {}
+      - name: lucene-index
+        {{- if .Values.luceneIndex.enabled }}
+        persistentVolumeClaim:
+          claimName: lucene-index-pvc
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
 status: {}

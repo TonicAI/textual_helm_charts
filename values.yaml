@@ -194,3 +194,12 @@ openAiApiKey: <open-ai-api-key>
 # differences in the running an new versions. "Recreate" means that the current deployment will be deleted and a
 # new one created. This will result in Solar being down during an update.
 deployStrategy: Recreate
+
+# Lucene Index Shared Storage Configuration
+# Enable this for multi-pod deployments where API and Worker pods need to share the Lucene text search index.
+# When disabled (default), each pod uses an emptyDir volume which is not shared and is wiped on pod restart.
+# Requires a storage class that supports ReadWriteMany (RWX) access mode (e.g., NFS, Azure Files, AWS EFS).
+luceneIndex:
+  enabled: false
+  # storageClassName: ""  # Optional: specify a storage class name, uses cluster default if not set
+  size: 10Gi

@@ -1,0 +1,21 @@
+{{- if .Values.luceneIndex.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lucene-index-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "textual.allLabels" (list $ (dict "app" "lucene-index")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  {{- if .Values.luceneIndex.storageClassName }}
+  storageClassName: {{ .Values.luceneIndex.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.luceneIndex.size | default "10Gi" }}
+{{- end }}
+

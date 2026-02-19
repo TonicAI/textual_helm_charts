@@ -55,6 +55,9 @@ spec:
             mountPath: /tmp
           - name: dotnet
             mountPath: /.dotnet
+          - name: lucene-index
+            mountPath: /.lucene-index
+            readOnly: false
           env:
             - name: SOLAR_LICENSE
               valueFrom:
@@ -170,4 +173,11 @@ spec:
           emptyDir: {}
         - name: dotnet
           emptyDir: {}
+        - name: lucene-index
+          {{- if .Values.luceneIndex.enabled }}
+          persistentVolumeClaim:
+            claimName: lucene-index-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
 status: {}
