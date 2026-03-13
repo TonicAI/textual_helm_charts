@@ -85,6 +85,12 @@ spec:
           - name: ENABLE_LOG_COLLECTION
             value: {{ .Values.enableLogCollection | quote }}
         {{- end }}
+        {{- if (.Values.textual_roberta).env }}
+        {{- range $key, $value := .Values.textual_roberta.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
         {{- if (.Values.textual_roberta).useGpu }}
