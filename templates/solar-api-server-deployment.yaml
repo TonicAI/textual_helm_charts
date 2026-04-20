@@ -105,6 +105,21 @@ spec:
                 name: openai-api-key
                 key: secret
           {{- end }}
+          {{- if .Values.chatModelEndpoint }}
+          - name: CHAT_MODEL_ENDPOINT
+            value: {{ .Values.chatModelEndpoint }}
+          {{- end }}
+          {{- if .Values.chatModelName }}
+          - name: CHAT_MODEL_NAME
+            value: {{ .Values.chatModelName }}
+          {{- end }}
+          {{- if .Values.chatApiKey }}
+          - name: CHAT_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: chat-api-key
+                key: secret
+          {{- end }}
           {{- if .Values.googleClientId }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_ID
             value: {{ .Values.googleClientId }}
