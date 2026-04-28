@@ -13,7 +13,9 @@ metadata:
   name: textual-roberta
   namespace: {{ .Release.Namespace }}
   labels:
-    app: textual-roberta
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-roberta")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -25,7 +27,9 @@ spec:
   template:
     metadata:
       labels:
-        app: textual-roberta
+        {{- include "textual.allLabels" (list $ (dict "app" "textual-roberta")) | nindent 8 }}
+      annotations:
+        {{- include "textual.allAnnotations" (list $) | nindent 8 }}
     spec:
       affinity:
         podAntiAffinity:
@@ -73,8 +77,7 @@ spec:
           - name: SOLAR_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: textual-db-password
-                key: password
+                {{- include "textual.dbPasswordSecretRef" . | nindent 16 }}
           - name: SOLAR_DB_PORT
             value: {{quote .Values.textualDatabase.port }}
           - name: SOLAR_DB_SSLMODE
@@ -94,13 +97,17 @@ spec:
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
         {{- if (.Values.textual_roberta).useGpu }}
-        image: quay.io/tonicai/textual-roberta-gpu:{{ .Values.textualVersion }}
-        {{- else }}
-        {{- if  (.Values.textual_roberta).image }}
+          {{- if (.Values.textual_roberta).image }}
         image: {{ .Values.textual_roberta.image }}:{{ .Values.textual_roberta.version | default .Values.textualVersion }}
-        {{ else }}
+          {{- else }}
+        image: quay.io/tonicai/textual-roberta-gpu:{{ .Values.textualVersion }}
+          {{- end }}
+        {{- else }}
+          {{- if (.Values.textual_roberta).image }}
+        image: {{ .Values.textual_roberta.image }}:{{ .Values.textual_roberta.version | default .Values.textualVersion }}
+          {{- else }}
         image: quay.io/tonicai/textual-roberta:{{ .Values.textualVersion }}
-        {{- end }}
+          {{- end }}
         {{- end }}
         imagePullPolicy: IfNotPresent
         name: textual-roberta

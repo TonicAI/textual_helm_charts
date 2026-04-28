@@ -14,7 +14,11 @@ textualDatabase:
   port: 5432
   dbName: textual
   user: <user>
+  # Option A: provide the password directly - leave blank to use existing k8 secret
   password: <password>
+  # Option B: reference an existing K8s Secret (e.g. synced from AWS Secrets Manager via CSI driver)
+  # existingSecret: <secret-name>
+  # existingSecretKey: password   # key within the secret, defaults to "password"
   sslMode: Require
 
 

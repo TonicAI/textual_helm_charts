@@ -77,8 +77,7 @@ spec:
           - name: SOLAR_DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: textual-db-password
-                key: password
+                {{- include "textual.dbPasswordSecretRef" . | nindent 16 }}
           - name: SOLAR_DB_PORT
             value: {{quote .Values.textualDatabase.port }}
           - name: SOLAR_DB_SSLMODE

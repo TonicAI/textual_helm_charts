@@ -4,7 +4,9 @@ metadata:
   name: textual-roberta
   namespace: {{ .Release.Namespace }}
   labels:
-    app: textual-roberta
+    {{- include "textual.allLabels" (list $ (dict "app" "textual-roberta")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   selector:
     app: textual-roberta

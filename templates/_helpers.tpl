@@ -214,3 +214,7 @@ Select the busybox image
 {{ end -}}
 {{- end }}
 
+{{- define "textual.dbPasswordSecretRef" -}}
+name: {{ .Values.textualDatabase.existingSecret | default "textual-db-password" }}
+key: {{ .Values.textualDatabase.existingSecretKey | default "password" }}
+{{- end }}
