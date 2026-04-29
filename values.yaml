@@ -132,6 +132,7 @@ solarStatisticsSeed: <any-integer>
 openAiApiKey: <open-ai-api-key>
 
 # AI Chat Config
+#chatLlmProvider: gemini
 #chatModelEndpoint: https://generativelanguage.googleapis.com
 #chatModelName: gemini-2.5-flash
 #chatApiKey: <api-key>
