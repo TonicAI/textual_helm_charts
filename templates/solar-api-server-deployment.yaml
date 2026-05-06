@@ -50,6 +50,8 @@ spec:
             mountPath: /usr/bin/textual/logs_public
           - name: var-logs
             mountPath: /usr/bin/textual/logs
+          - name: compiled-migrations
+            mountPath: /usr/bin/textual/compiled-migrations
           {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: vector-configuration
             mountPath: /usr/bin/textual/vector_config
@@ -302,6 +304,8 @@ spec:
         emptyDir: {}
       - name: var-logs
         emptyDir: {}
+      - name: compiled-migrations
+        emptyDir: { }
       {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
       - name: vector-configuration
         emptyDir: {}
