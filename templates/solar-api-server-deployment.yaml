@@ -89,6 +89,10 @@ spec:
             value: {{ .Values.textualDatabase.sslMode }}
           - name: SOLAR_DB_HOST
             value: {{ .Values.textualDatabase.host }}
+          {{- if .Values.textualDatabase.schema }}
+          - name: SOLAR_DB_SCHEMA
+            value: {{ .Values.textualDatabase.schema }}
+          {{- end }}
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
           {{- if .Values.solarStatisticsSeed }}

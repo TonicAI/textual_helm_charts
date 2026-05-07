@@ -20,6 +20,8 @@ textualDatabase:
   # existingSecret: <secret-name>
   # existingSecretKey: password   # key within the secret, defaults to "password"
   sslMode: Require
+  ## Optional, if you want to customize the schema name used (defaults to "public")
+  # schema: public
 
 
 # Optional Labels to add to all resources - if there is a conflict we use allLabels
