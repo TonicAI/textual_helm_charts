@@ -58,6 +58,7 @@ spec:
           - name: lucene-index
             mountPath: /.lucene-index
             readOnly: false
+          {{- include "textual.customCa.volumeMount" . | nindent 10 }}
           env:
             - name: SOLAR_LICENSE
               valueFrom:
@@ -131,6 +132,7 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
+            {{- include "textual.customCa.env" . | nindent 12 }}
           {{- if (.Values.textual_worker).image }}
           image: {{ .Values.textual_worker.image }}:{{ .Values.textualVersion }}
           {{ else }}
@@ -183,4 +185,5 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- include "textual.customCa.volume" . | nindent 8 }}
 status: {}

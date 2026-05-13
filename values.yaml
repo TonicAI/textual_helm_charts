@@ -199,6 +199,30 @@ openAiApiKey: <open-ai-api-key>
 # Must be set to import groups
 #oidcGroupFilterRegex: <regex-pattern-for-groups>
 
+# Custom CA Configuration
+# -----------------
+# Trust customer-supplied CA certificates for outbound HTTPS calls made from the api-server and worker pods.
+# Create a ConfigMap in the release namespace whose keys are CA certificate files and reference it here.
+# The certs are loaded into the pod's trust store at startup; rotating the ConfigMap requires a pod restart.
+#
+# Supported file extensions: .crt, .pem, .cer, .der, .ca-bundle (case-insensitive). Both PEM (text) and DER
+# (binary) encodings are auto-detected. PEM bundles containing multiple certs (e.g. root + intermediates) are
+# loaded in full. ConfigMap keys WITHOUT one of these extensions are silently ignored — make sure to name keys
+# accordingly when creating the ConfigMap, e.g.:
+#   kubectl create configmap textual-custom-ca --from-file=corp-root.crt=./corp-root.crt -n <release-namespace>
+#
+# SOLAR_CUSTOM_CA_PATH also accepts a single certificate file (any extension), so operators who
+# manage their own volume/mount can set customCa.enabled=false and inject SOLAR_CUSTOM_CA_PATH directly via
+# textual_api_server.env / textual_worker.env, pointing at either a directory or a specific bundle file.
+customCa:
+  enabled: false
+  # Name of a ConfigMap in the release namespace. Each key in the ConfigMap is a certificate file mounted
+  # at the path below. Required when customCa.enabled is true.
+  configMapName: ""
+  # Path inside the pod where the certs are mounted and read from. The chart drives both the volumeMount
+  # and the SOLAR_CUSTOM_CA_PATH env var from this single value, so override here if you need a different path.
+  mountPath: /etc/tonic/textual/trusted-ca-certs
+
 # Deployment Strategy: This can be set to either "RollingUpdate" or "Recreate". If not provided, the default value
 # is "Recreate". "RollingUpdate" will perform a rolling update of the deployment similar to a blue/green
 # deployment and thus requires additional resources as both old and new versions will be running simultaneously

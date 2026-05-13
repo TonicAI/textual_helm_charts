@@ -63,6 +63,7 @@ spec:
           - name: lucene-index
             mountPath: /.lucene-index
             readOnly: true
+          {{- include "textual.customCa.volumeMount" . | nindent 10 }}
           env:
           {{- if (.Values.textual_api_server).env}}
           {{- range $key, $value := .Values.textual_api_server.env }}
@@ -268,6 +269,7 @@ spec:
               secretKeyRef:
                 name: solar-license-secret
                 key: secret
+          {{- include "textual.customCa.env" . | nindent 10 }}
           {{- if  (.Values.textual_api_server).image }}
           image: {{ .Values.textual_api_server.image }}:{{ .Values.textualVersion }}
           {{ else }}
@@ -327,4 +329,5 @@ spec:
         {{- else }}
         emptyDir: {}
         {{- end }}
+      {{- include "textual.customCa.volume" . | nindent 6 }}
 status: {}
