@@ -73,8 +73,7 @@ spec:
           - name: SOLAR_SECRET
             valueFrom:
               secretKeyRef:
-                name: textual-encryption-secret
-                key: secret
+                {{- include "textual.encryptionSecretRef" . | nindent 16 }}
           - name: SOLAR_DB_DATABASE
             value: {{ .Values.textualDatabase.dbName }}
           - name: SOLAR_DB_USERNAME
@@ -103,12 +102,11 @@ spec:
           - name: SOLAR_AUTH_RPM_LIMIT
             value: {{quote .Values.solarAuthRpmLimit }}
           {{- end }}
-          {{- if .Values.openAiApiKey }}
+          {{- if or .Values.openAiApiKey .Values.openAiApiKeyExistingSecret }}
           - name: OPENAI_API_KEY
             valueFrom:
               secretKeyRef:
-                name: openai-api-key
-                key: secret
+                {{- include "textual.openAiApiKeySecretRef" . | nindent 16 }}
           {{- end }}
           {{- if .Values.chatLlmProvider }}
           - name: CHAT_LLM_PROVIDER
@@ -122,23 +120,21 @@ spec:
           - name: CHAT_MODEL_NAME
             value: {{ .Values.chatModelName }}
           {{- end }}
-          {{- if .Values.chatApiKey }}
+          {{- if or .Values.chatApiKey .Values.chatApiKeyExistingSecret }}
           - name: CHAT_API_KEY
             valueFrom:
               secretKeyRef:
-                name: chat-api-key
-                key: secret
+                {{- include "textual.chatApiKeySecretRef" . | nindent 16 }}
           {{- end }}
           {{- if .Values.googleClientId }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_ID
             value: {{ .Values.googleClientId }}
           {{- end }}
-          {{- if .Values.googleClientSecret }}
+          {{- if or .Values.googleClientSecret .Values.googleClientSecretExistingSecret }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: google-sso-client-secret
-                key: secret
+                {{- include "textual.googleClientSecretRef" . | nindent 16 }}
           {{- end }}
           {{- if .Values.googleGroupFilterRegex }}
           - name: SOLAR_SSO_GOOGLE_GROUP_FILTER_REGEX
@@ -148,12 +144,11 @@ spec:
           - name: SOLAR_SSO_GITHUB_CLIENT_ID
             value: {{ .Values.githubClientId }}
           {{- end }}
-          {{- if .Values.githubClientSecret }}
+          {{- if or .Values.githubClientSecret .Values.githubClientSecretExistingSecret }}
           - name: SOLAR_SSO_GITHUB_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: github-sso-client-secret
-                key: secret
+                {{- include "textual.githubClientSecretRef" . | nindent 16 }}
           {{- end }}
           {{- if .Values.oktaClientId }}
           - name: SOLAR_SSO_OKTA_CLIENT_ID
@@ -183,12 +178,11 @@ spec:
           - name: SOLAR_SSO_AZURE_TENANT_ID
             value: {{ .Values.azureTenantId }}
           {{- end }}
-          {{- if .Values.azureClientSecret }}
+          {{- if or .Values.azureClientSecret .Values.azureClientSecretExistingSecret }}
           - name: SOLAR_SSO_AZURE_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: azure-sso-client-secret
-                key: secret
+                {{- include "textual.azureClientSecretRef" . | nindent 16 }}
           {{- end }}
           {{- if .Values.azureGroupFilterRegex }}
           - name: SOLAR_SSO_AZURE_GROUP_FILTER_REGEX
@@ -198,12 +192,11 @@ spec:
           - name: SOLAR_SSO_KEYCLOAK_CLIENT_ID
             value: {{ .Values.keycloakClientId }}
           {{- end }}
-          {{- if .Values.keycloakClientSecret }}
+          {{- if or .Values.keycloakClientSecret .Values.keycloakClientSecretExistingSecret }}
           - name: SOLAR_SSO_KEYCLOAK_CLIENT_SECRET
             valueFrom:
               secretKeyRef:
-                name: keycloak-sso-client-secret
-                key: secret
+                {{- include "textual.keycloakClientSecretRef" . | nindent 16 }}
           {{- end }}
           {{- if .Values.keycloakAuthority }}
           - name: SOLAR_SSO_KEYCLOAK_AUTHORITY
@@ -266,8 +259,7 @@ spec:
           - name: SOLAR_LICENSE
             valueFrom:
               secretKeyRef:
-                name: solar-license-secret
-                key: secret
+                {{- include "textual.licenseSecretRef" . | nindent 16 }}
           {{- if  (.Values.textual_api_server).image }}
           image: {{ .Values.textual_api_server.image }}:{{ .Values.textualVersion }}
           {{ else }}

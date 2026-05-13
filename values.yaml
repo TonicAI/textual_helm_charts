@@ -4,7 +4,13 @@ environmentName: <company-name>
 textualVersion: "<version-number>"
 
 solarLicense: <license>
+# Option B: reference an existing K8s Secret
+# solarLicenseExistingSecret: <secret-name>
+# solarLicenseExistingSecretKey: secret  # key within the secret, defaults to "secret"
 textualEncryptionSecret: <encryption-key>
+# Option B: reference an existing K8s Secret
+# textualEncryptionSecretExistingSecret: <secret-name>
+# textualEncryptionSecretExistingSecretKey: secret  # key within the secret, defaults to "secret"
 asr:
   create: false
 
@@ -132,6 +138,11 @@ solarStatisticsSeed: <any-integer>
 
 # Optional, required when using using llm synthesis
 openAiApiKey: <open-ai-api-key>
+# openAiApiKeyExistingSecret: <secret-name>
+# openAiApiKeyExistingSecretKey: secret
+
+# chatApiKeyExistingSecret: <secret-name>
+# chatApiKeyExistingSecretKey: secret
 
 # AI Chat Config
 #chatLlmProvider: gemini
@@ -141,12 +152,16 @@ openAiApiKey: <open-ai-api-key>
 
 # OCR Credentials
 #azureDocIntelligenceKey: <key>
+#azureDocIntelligenceKeyExistingSecret: <secret-name>
+#azureDocIntelligenceKeyExistingSecretKey: secret
 #azureDocIntelligenceEndpoint: <enndpoint-url>
 
 # Google SSO Config
 # -----------------
 #googleClientId: <client-id>
 #googleClientSecret: <client-secret>
+#googleClientSecretExistingSecret: <secret-name>
+#googleClientSecretExistingSecretKey: secret
 # -- Optional --
 # Must be set to import groups
 #googleGroupFilterRegex: <regex-pattern-for-groups>
@@ -165,12 +180,16 @@ openAiApiKey: <open-ai-api-key>
 # -----------------
 #githubClientId: <client-id>
 #githubClientSecret: <client-secret>
+#githubClientSecretExistingSecret: <secret-name>
+#githubClientSecretExistingSecretKey: secret
 
 # Azure SSO Config
 # -----------------
 #azureClientId: <client-id>
 #azureTenantId: <tenant-id>
 #azureClientSecret: <client-secret>
+#azureClientSecretExistingSecret: <secret-name>
+#azureClientSecretExistingSecretKey: secret
 # -- Optional --
 # Must be set to import groups
 #azureGroupFilterRegex: <regex-pattern-for-groups>
@@ -179,6 +198,8 @@ openAiApiKey: <open-ai-api-key>
 # -----------------
 #keycloakClientId: <client-id>
 #keycloakClientSecret: <client-secret>
+#keycloakClientSecretExistingSecret: <secret-name>
+#keycloakClientSecretExistingSecretKey: secret
 #keycloakAuthority: <authority-url>
 # -- Optional --
 # Must be set to import groups

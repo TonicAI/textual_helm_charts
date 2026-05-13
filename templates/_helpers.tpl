@@ -218,3 +218,48 @@ Select the busybox image
 name: {{ .Values.textualDatabase.existingSecret | default "textual-db-password" }}
 key: {{ .Values.textualDatabase.existingSecretKey | default "password" }}
 {{- end }}
+
+{{- define "textual.licenseSecretRef" -}}
+name: {{ .Values.solarLicenseExistingSecret | default "solar-license-secret" }}
+key: {{ .Values.solarLicenseExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.encryptionSecretRef" -}}
+name: {{ .Values.textualEncryptionSecretExistingSecret | default "textual-encryption-secret" }}
+key: {{ .Values.textualEncryptionSecretExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.openAiApiKeySecretRef" -}}
+name: {{ .Values.openAiApiKeyExistingSecret | default "openai-api-key" }}
+key: {{ .Values.openAiApiKeyExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.chatApiKeySecretRef" -}}
+name: {{ .Values.chatApiKeyExistingSecret | default "chat-api-key" }}
+key: {{ .Values.chatApiKeyExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.googleClientSecretRef" -}}
+name: {{ .Values.googleClientSecretExistingSecret | default "google-sso-client-secret" }}
+key: {{ .Values.googleClientSecretExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.githubClientSecretRef" -}}
+name: {{ .Values.githubClientSecretExistingSecret | default "github-sso-client-secret" }}
+key: {{ .Values.githubClientSecretExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.azureClientSecretRef" -}}
+name: {{ .Values.azureClientSecretExistingSecret | default "azure-sso-client-secret" }}
+key: {{ .Values.azureClientSecretExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.keycloakClientSecretRef" -}}
+name: {{ .Values.keycloakClientSecretExistingSecret | default "keycloak-sso-client-secret" }}
+key: {{ .Values.keycloakClientSecretExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.azureDocIntelligenceKeySecretRef" -}}
+name: {{ .Values.azureDocIntelligenceKeyExistingSecret | default "azure-document-intelligence-key-secret" }}
+key: {{ .Values.azureDocIntelligenceKeyExistingSecretKey | default "secret" }}
+{{- end }}
