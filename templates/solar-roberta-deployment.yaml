@@ -57,10 +57,6 @@ spec:
             mountPath: /usr/bin/textual/logs_public
           - name: var-logs
             mountPath: /usr/bin/textual/logs
-          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-          - name: vector-configuration
-            mountPath: /usr/bin/textual/vector_config
-          {{- end }}
           - name: supervisor-run
             mountPath: /var/log/supervisor
           - name: supervisor-log
@@ -140,12 +136,6 @@ spec:
           emptyDir: {}
         - name: var-logs
           emptyDir: {}
-        {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-        - name: vector-configuration
-          emptyDir: { }
-        - name: vector-working
-          emptyDir: { }
-        {{- end }}
         - name: supervisor-run
           emptyDir: {}
         - name: supervisor-log

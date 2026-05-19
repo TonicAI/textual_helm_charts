@@ -47,10 +47,6 @@ spec:
             mountPath: /app/logs_public
           - name: var-logs
             mountPath: /app/logs
-          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-          - name: vector-configuration
-            mountPath: /app/vector_config
-          {{- end }}
           - name: tmp
             mountPath: /tmp
         env: []
@@ -67,12 +63,6 @@ spec:
           emptyDir: {}
         - name: var-logs
           emptyDir: {}
-        {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-        - name: vector-configuration
-          emptyDir: {}
-        - name: vector-working
-          emptyDir: {}
-        {{- end }}
         - name: tmp
           emptyDir: {}
   {{- end }}

@@ -160,6 +160,8 @@ openAiApiKey: <open-ai-api-key>
 # -- Optional --
 # Must be set to import groups
 #oktaGroupFilterRegex: <regex-pattern-for-groups>
+# Use the Authorization Grant with PKCE flow in Okta. If false (default) it will use the Implicit (hybrid) flow instead
+#oktaUsePkceFlow: true
 
 # Github SSO Config
 # -----------------

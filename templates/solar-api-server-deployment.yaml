@@ -52,10 +52,6 @@ spec:
             mountPath: /usr/bin/textual/logs
           - name: compiled-migrations
             mountPath: /usr/bin/textual/compiled-migrations
-          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-          - name: vector-configuration
-            mountPath: /usr/bin/textual/vector_config
-          {{- end }}
           - name: tmp
             mountPath: /tmp
           - name: dotnet
@@ -175,6 +171,10 @@ spec:
           {{- if .Values.oktaGroupFilterRegex }}
           - name: SOLAR_SSO_OKTA_GROUP_FILTER_REGEX
             value: {{ .Values.oktaGroupFilterRegex }}
+          {{- end }}
+          {{- if .Values.oktaUsePkceFlow }}
+          - name: SOLAR_SSO_OKTA_USE_PKCE
+            value: {{ .Values.oktaUsePkceFlow | quote }}
           {{- end }}
           {{- if .Values.azureClientId }}
           - name: SOLAR_SSO_AZURE_CLIENT_ID
@@ -312,12 +312,6 @@ spec:
         emptyDir: {}
       - name: compiled-migrations
         emptyDir: { }
-      {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-      - name: vector-configuration
-        emptyDir: {}
-      - name: vector-working
-        emptyDir: {}
-      {{- end }}
       - name: tmp
         emptyDir: {}
       - name: dotnet
