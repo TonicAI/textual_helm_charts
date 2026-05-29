@@ -47,10 +47,6 @@ spec:
             mountPath: /usr/bin/textual/logs_public
           - name: var-logs
             mountPath: /usr/bin/textual/logs
-          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-          - name: vector-configuration
-            mountPath: /usr/bin/textual/vector_config
-          {{- end }}
           - name: tmp
             mountPath: /tmp
           - name: dotnet
@@ -58,6 +54,7 @@ spec:
           - name: lucene-index
             mountPath: /.lucene-index
             readOnly: false
+          {{- include "textual.customCa.volumeMount" . | nindent 10 }}
           env:
             - name: SOLAR_LICENSE
               valueFrom:
@@ -127,6 +124,7 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
+            {{- include "textual.customCa.env" . | nindent 12 }}
           {{- if (.Values.textual_worker).image }}
           image: {{ .Values.textual_worker.image }}:{{ .Values.textualVersion }}
           {{ else }}
@@ -162,12 +160,6 @@ spec:
           emptyDir: {}
         - name: var-logs
           emptyDir: {}
-        {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-        - name: vector-configuration
-          emptyDir: {}
-        - name: vector-working
-          emptyDir: { }
-        {{- end }}
         - name: tmp
           emptyDir: {}
         - name: dotnet
@@ -179,4 +171,5 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- include "textual.customCa.volume" . | nindent 8 }}
 status: {}

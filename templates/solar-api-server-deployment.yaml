@@ -52,10 +52,6 @@ spec:
             mountPath: /usr/bin/textual/logs
           - name: compiled-migrations
             mountPath: /usr/bin/textual/compiled-migrations
-          {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-          - name: vector-configuration
-            mountPath: /usr/bin/textual/vector_config
-          {{- end }}
           - name: tmp
             mountPath: /tmp
           - name: dotnet
@@ -63,6 +59,7 @@ spec:
           - name: lucene-index
             mountPath: /.lucene-index
             readOnly: true
+          {{- include "textual.customCa.volumeMount" . | nindent 10 }}
           env:
           {{- if (.Values.textual_api_server).env}}
           {{- range $key, $value := .Values.textual_api_server.env }}
@@ -170,6 +167,10 @@ spec:
           - name: SOLAR_SSO_OKTA_GROUP_FILTER_REGEX
             value: {{ .Values.oktaGroupFilterRegex }}
           {{- end }}
+          {{- if .Values.oktaUsePkceFlow }}
+          - name: SOLAR_SSO_OKTA_USE_PKCE
+            value: {{ .Values.oktaUsePkceFlow | quote }}
+          {{- end }}
           {{- if .Values.azureClientId }}
           - name: SOLAR_SSO_AZURE_CLIENT_ID
             value: {{ .Values.azureClientId }}
@@ -260,6 +261,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 {{- include "textual.licenseSecretRef" . | nindent 16 }}
+          {{- include "textual.customCa.env" . | nindent 10 }}
           {{- if  (.Values.textual_api_server).image }}
           image: {{ .Values.textual_api_server.image }}:{{ .Values.textualVersion }}
           {{ else }}
@@ -302,12 +304,6 @@ spec:
         emptyDir: {}
       - name: compiled-migrations
         emptyDir: { }
-      {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
-      - name: vector-configuration
-        emptyDir: {}
-      - name: vector-working
-        emptyDir: {}
-      {{- end }}
       - name: tmp
         emptyDir: {}
       - name: dotnet
@@ -319,4 +315,5 @@ spec:
         {{- else }}
         emptyDir: {}
         {{- end }}
+      {{- include "textual.customCa.volume" . | nindent 6 }}
 status: {}

@@ -263,3 +263,46 @@ key: {{ .Values.keycloakClientSecretExistingSecretKey | default "secret" }}
 name: {{ .Values.azureDocIntelligenceKeyExistingSecret | default "azure-document-intelligence-key-secret" }}
 key: {{ .Values.azureDocIntelligenceKeyExistingSecretKey | default "secret" }}
 {{- end }}
+
+{{/*
+Custom CA volume: mounts a customer-supplied ConfigMap of PEM-encoded CAs.
+Emitted only when .Values.customCa.enabled is true. Use at the volumes: list of a Deployment.
+*/}}
+{{- define "textual.customCa.volume" -}}
+{{- if (.Values.customCa).enabled }}
+- name: custom-ca-source
+  configMap:
+    name: {{ required "customCa.configMapName must be set when customCa.enabled is true" .Values.customCa.configMapName }}
+    optional: true
+{{- end }}
+{{- end }}
+
+{{/*
+Custom CA mount path: single source of truth for the path used by both the volumeMount and the env var.
+*/}}
+{{- define "textual.customCa.path" -}}
+{{- (.Values.customCa).mountPath | default "/etc/tonic/textual/trusted-ca-certs" -}}
+{{- end }}
+
+{{/*
+Custom CA volumeMount: mounts the ConfigMap read-only at the configured path.
+Emitted only when .Values.customCa.enabled is true. Use at the main container's volumeMounts: list.
+*/}}
+{{- define "textual.customCa.volumeMount" -}}
+{{- if (.Values.customCa).enabled }}
+- name: custom-ca-source
+  mountPath: {{ include "textual.customCa.path" . }}
+  readOnly: true
+{{- end }}
+{{- end }}
+
+{{/*
+Custom CA env: tells the app where to find the cert files at startup.
+Emitted only when .Values.customCa.enabled is true. Use at the main container's env: list.
+*/}}
+{{- define "textual.customCa.env" -}}
+{{- if (.Values.customCa).enabled }}
+- name: SOLAR_CUSTOM_CA_PATH
+  value: {{ include "textual.customCa.path" . | quote }}
+{{- end }}
+{{- end }}
