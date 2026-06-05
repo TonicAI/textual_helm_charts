@@ -1,0 +1,20 @@
+{{- if .Values.customModels.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: custom-models-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "textual.allLabels" (list $ (dict "app" "custom-models")) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  {{- if .Values.customModels.storageClassName }}
+  storageClassName: {{ .Values.customModels.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.customModels.size | default "10Gi" }}
+{{- end }}

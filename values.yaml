@@ -241,3 +241,16 @@ luceneIndex:
   enabled: false
   # storageClassName: ""  # Optional: specify a storage class name, uses cluster default if not set
   size: 10Gi
+
+# Custom Models Shared Storage Configuration
+# Enable this so imported entity LoRA adapters (Custom Entity Library import feature) survive pod
+# restarts and are visible to BOTH the textual-roberta and textual-ml deployments, which mount the
+# same /usr/bin/textual/custom_models path. Without this, imported adapters live in an emptyDir and
+# disappear on any pod recycle, breaking subsequent training/inference runs against custom entities.
+# Who needs it: anyone using the Custom Entity Library import feature on a multi-pod k8s install.
+# Requires a storage class that supports ReadWriteMany (RWX) access mode (e.g., NFS, Azure Files,
+# AWS EFS), because both deployments mount the same claim concurrently.
+customModels:
+  enabled: false
+  # storageClassName: ""  # Optional: specify a storage class name, uses cluster default if not set
+  size: 100Mi

@@ -141,6 +141,11 @@ spec:
         - name: supervisor-log
           emptyDir: {}
         - name: custom-models
+          {{- if .Values.customModels.enabled }}
+          persistentVolumeClaim:
+            claimName: custom-models-pvc
+          {{- else }}
           emptyDir: {}
+          {{- end }}
         - name: tmp
           emptyDir: {}
