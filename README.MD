@@ -59,6 +59,60 @@ This value is used as the secret for encryption
 * textualEncryptionSecret: Any string value is valid
 
 
+## Using Existing Kubernetes Secrets
+
+For all sensitive values, instead of providing the value directly in `values.yaml`, you can reference a pre-existing Kubernetes secret. This is useful when secrets are managed externally (e.g. synced from AWS Secrets Manager, Azure Key Vault, or HashiCorp Vault via a CSI driver).
+
+The pattern for each is an `ExistingSecret` field (the secret name) and an optional `ExistingSecretKey` field (the key within the secret, defaulting to the value shown below).
+
+### Database password
+
+```yaml
+textualDatabase:
+  # Option A: provide the password directly
+  password: <password>
+  # Option B: reference an existing secret
+  existingSecret: <secret-name>
+  existingSecretKey: password  # default
+```
+
+### Solar license
+
+```yaml
+# Option A: provide the license directly
+solarLicense: <license>
+# Option B: reference an existing secret
+solarLicenseExistingSecret: <secret-name>
+solarLicenseExistingSecretKey: secret  # default
+```
+
+### Encryption secret
+
+```yaml
+# Option A: provide the value directly
+textualEncryptionSecret: <value>
+# Option B: reference an existing secret
+textualEncryptionSecretExistingSecret: <secret-name>
+textualEncryptionSecretExistingSecretKey: secret  # default
+```
+
+### Optional secrets
+
+The same pattern applies to all other sensitive values:
+
+| Value | ExistingSecret field | ExistingSecretKey field | Default key |
+|---|---|---|---|
+| `openAiApiKey` | `openAiApiKeyExistingSecret` | `openAiApiKeyExistingSecretKey` | `secret` |
+| `chatApiKey` | `chatApiKeyExistingSecret` | `chatApiKeyExistingSecretKey` | `secret` |
+| `azureDocIntelligenceKey` | `azureDocIntelligenceKeyExistingSecret` | `azureDocIntelligenceKeyExistingSecretKey` | `secret` |
+| `googleClientSecret` | `googleClientSecretExistingSecret` | `googleClientSecretExistingSecretKey` | `secret` |
+| `githubClientSecret` | `githubClientSecretExistingSecret` | `githubClientSecretExistingSecretKey` | `secret` |
+| `azureClientSecret` | `azureClientSecretExistingSecret` | `azureClientSecretExistingSecretKey` | `secret` |
+| `keycloakClientSecret` | `keycloakClientSecretExistingSecret` | `keycloakClientSecretExistingSecretKey` | `secret` |
+
+When using an `ExistingSecret`, the chart will not create a Kubernetes secret for that value — it will reference the named secret directly. For optional values, if neither the direct value nor `ExistingSecret` is set, the corresponding environment variable is simply omitted.
+
+
 ### Authorization to access Tonic application Docker images
 
 Tonic hosts our application images on a private quay.io repository. Authorization is required to pull the images.

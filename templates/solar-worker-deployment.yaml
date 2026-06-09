@@ -59,13 +59,11 @@ spec:
             - name: SOLAR_LICENSE
               valueFrom:
                 secretKeyRef:
-                  name: solar-license-secret
-                  key: secret
+                  {{- include "textual.licenseSecretRef" . | nindent 18 }}
             - name: SOLAR_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: textual-encryption-secret
-                  key: secret
+                  {{- include "textual.encryptionSecretRef" . | nindent 18 }}
             - name: SOLAR_DB_DATABASE
               value: {{ .Values.textualDatabase.dbName }}
             - name: SOLAR_DB_USERNAME
@@ -104,23 +102,21 @@ spec:
             - name: ENABLE_LOG_COLLECTION
               value: {{ .Values.enableLogCollection | quote }}
             {{- end }}
-            {{- if .Values.azureDocIntelligenceKey }}
+            {{- if or .Values.azureDocIntelligenceKey .Values.azureDocIntelligenceKeyExistingSecret }}
             - name: SOLAR_AZURE_DOC_INTELLIGENCE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: azure-document-intelligence-key-secret
-                  key: secret
+                  {{- include "textual.azureDocIntelligenceKeySecretRef" . | nindent 18 }}
             {{- end }}
             {{- if .Values.azureDocIntelligenceEndpoint }}
             - name: SOLAR_AZURE_DOC_INTELLIGENCE_ENDPOINT
               value: {{ .Values.azureDocIntelligenceEndpoint }}
             {{- end }}
-            {{- if .Values.openAiApiKey }}
+            {{- if or .Values.openAiApiKey .Values.openAiApiKeyExistingSecret }}
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: openai-api-key
-                  key: secret
+                  {{- include "textual.openAiApiKeySecretRef" . | nindent 18 }}
             {{- end }}
             {{- if (.Values.textual_worker).env}}
             {{- range $key, $value := .Values.textual_worker.env }}
