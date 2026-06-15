@@ -99,30 +99,7 @@ spec:
           - name: SOLAR_AUTH_RPM_LIMIT
             value: {{quote .Values.solarAuthRpmLimit }}
           {{- end }}
-          {{- if or .Values.openAiApiKey .Values.openAiApiKeyExistingSecret }}
-          - name: OPENAI_API_KEY
-            valueFrom:
-              secretKeyRef:
-                {{- include "textual.openAiApiKeySecretRef" . | nindent 16 }}
-          {{- end }}
-          {{- if .Values.chatLlmProvider }}
-          - name: CHAT_LLM_PROVIDER
-            value: {{ .Values.chatLlmProvider }}
-          {{- end }}
-          {{- if .Values.chatModelEndpoint }}
-          - name: CHAT_MODEL_ENDPOINT
-            value: {{ .Values.chatModelEndpoint }}
-          {{- end }}
-          {{- if .Values.chatModelName }}
-          - name: CHAT_MODEL_NAME
-            value: {{ .Values.chatModelName }}
-          {{- end }}
-          {{- if or .Values.chatApiKey .Values.chatApiKeyExistingSecret }}
-          - name: CHAT_API_KEY
-            valueFrom:
-              secretKeyRef:
-                {{- include "textual.chatApiKeySecretRef" . | nindent 16 }}
-          {{- end }}
+          {{- include "textual.llmEnv" . | nindent 10 }}
           {{- if .Values.googleClientId }}
           - name: SOLAR_SSO_GOOGLE_CLIENT_ID
             value: {{ .Values.googleClientId }}

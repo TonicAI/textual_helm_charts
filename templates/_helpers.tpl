@@ -239,6 +239,21 @@ name: {{ .Values.chatApiKeyExistingSecret | default "chat-api-key" }}
 key: {{ .Values.chatApiKeyExistingSecretKey | default "secret" }}
 {{- end }}
 
+{{- define "textual.llmProviderOpenAiApiKeySecretRef" -}}
+name: {{ ((.Values.llmProvider).openai).apiKeyExistingSecret | default "llm-provider-openai-api-key" }}
+key: {{ ((.Values.llmProvider).openai).apiKeyExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.llmProviderGoogleAiStudioApiKeySecretRef" -}}
+name: {{ ((.Values.llmProvider).googleAiStudio).apiKeyExistingSecret | default "llm-provider-google-ai-studio-api-key" }}
+key: {{ ((.Values.llmProvider).googleAiStudio).apiKeyExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.llmProviderVertexAiApiKeySecretRef" -}}
+name: {{ ((.Values.llmProvider).vertexAi).apiKeyExistingSecret | default "llm-provider-vertex-ai-api-key" }}
+key: {{ ((.Values.llmProvider).vertexAi).apiKeyExistingSecretKey | default "secret" }}
+{{- end }}
+
 {{- define "textual.googleClientSecretRef" -}}
 name: {{ .Values.googleClientSecretExistingSecret | default "google-sso-client-secret" }}
 key: {{ .Values.googleClientSecretExistingSecretKey | default "secret" }}
@@ -263,6 +278,115 @@ key: {{ .Values.keycloakClientSecretExistingSecretKey | default "secret" }}
 name: {{ .Values.azureDocIntelligenceKeyExistingSecret | default "azure-document-intelligence-key-secret" }}
 key: {{ .Values.azureDocIntelligenceKeyExistingSecretKey | default "secret" }}
 {{- end }}
+
+{{/*
+LLM provider credentials and feature config env vars.
+
+Supports both new structured config (llmProvider.*, defaultLlmProvider, etc.) and legacy
+flat config (chatModelEndpoint, chatApiKey). Raises a hard error if both are present on
+the same deployment to prevent silent misconfiguration.
+
+For new config, API keys can be supplied as inline values (apiKey) or via an existing
+Kubernetes Secret (existingSecret + existingSecretKey).
+
+Usage: {{- include "textual.llmEnv" . | nindent 10 }}
+*/}}
+{{- define "textual.llmEnv" -}}
+{{- $v := .Values -}}
+
+{{/* Hard error if legacy chat config and new config are both set */}}
+{{- if and (or $v.chatModelEndpoint $v.chatApiKey $v.chatApiKeyExistingSecret) (or $v.defaultLlmProvider $v.llmProvider) -}}
+  {{- fail "LLM config conflict: chatModelEndpoint/chatApiKey (legacy) cannot be used alongside defaultLlmProvider/llmProvider (new). Remove the legacy chat vars to migrate to the new config." -}}
+{{- end -}}
+
+{{/* New LLM provider credentials — configure only the providers you use */}}
+{{- with ($v.llmProvider).openai }}
+  {{- if or .apiKey .apiKeyExistingSecret }}
+- name: LLM_PROVIDER_OPEN_AI_API_KEY
+  valueFrom:
+    secretKeyRef:
+      {{- include "textual.llmProviderOpenAiApiKeySecretRef" $ | nindent 6 }}
+  {{- end }}
+  {{- if .url }}
+- name: LLM_PROVIDER_OPEN_AI_URL
+  value: {{ .url | quote }}
+  {{- end }}
+{{- end }}
+{{- with ($v.llmProvider).googleAiStudio }}
+  {{- if or .apiKey .apiKeyExistingSecret }}
+- name: LLM_PROVIDER_GOOGLE_AI_STUDIO_API_KEY
+  valueFrom:
+    secretKeyRef:
+      {{- include "textual.llmProviderGoogleAiStudioApiKeySecretRef" $ | nindent 6 }}
+  {{- end }}
+  {{- if .url }}
+- name: LLM_PROVIDER_GOOGLE_AI_STUDIO_URL
+  value: {{ .url | quote }}
+  {{- end }}
+{{- end }}
+{{- with ($v.llmProvider).vertexAi }}
+  {{- if or .apiKey .apiKeyExistingSecret }}
+- name: LLM_PROVIDER_VERTEX_AI_API_KEY
+  valueFrom:
+    secretKeyRef:
+      {{- include "textual.llmProviderVertexAiApiKeySecretRef" $ | nindent 6 }}
+  {{- end }}
+  {{- if .url }}
+- name: LLM_PROVIDER_VERTEX_AI_URL
+  value: {{ .url | quote }}
+  {{- end }}
+{{- end }}
+{{- with ($v.llmProvider).bedrock }}
+  {{- if .region }}
+- name: LLM_PROVIDER_AMAZON_BEDROCK_REGION
+  value: {{ .region | quote }}
+  {{- end }}
+  {{- if .maxTokens }}
+- name: LLM_PROVIDER_AMAZON_BEDROCK_MAX_TOKENS
+  value: {{ .maxTokens | quote }}
+  {{- end }}
+{{- end }}
+
+{{/* Shared defaults — apply to all features unless overridden per-feature */}}
+{{- if $v.defaultLlmProvider }}
+- name: LLM_DEFAULT_PROVIDER
+  value: {{ $v.defaultLlmProvider | quote }}
+{{- end }}
+{{- if $v.defaultLlmModel }}
+- name: LLM_DEFAULT_MODEL_NAME
+  value: {{ $v.defaultLlmModel | quote }}
+{{- end }}
+
+{{/* Per-feature overrides */}}
+{{- if $v.llmSynthesisProvider }}
+- name: MODEL_BASED_ENTITIES_LLM_PROVIDER
+  value: {{ $v.llmSynthesisProvider | quote }}
+{{- end }}
+{{- if $v.llmSynthesisModelName }}
+- name: MODEL_BASED_ENTITIES_LLM_MODEL_NAME
+  value: {{ $v.llmSynthesisModelName | quote }}
+{{- end }}
+{{- if $v.chatLlmProvider }}
+- name: CHAT_LLM_PROVIDER
+  value: {{ $v.chatLlmProvider | quote }}
+{{- end }}
+{{- if $v.chatModelName }}
+- name: CHAT_MODEL_NAME
+  value: {{ $v.chatModelName | quote }}
+{{- end }}
+
+{{/* Legacy chat config — kept for backward compatibility; conflicts with new config are caught above */}}
+{{- if $v.chatModelEndpoint }}
+- name: CHAT_MODEL_ENDPOINT
+  value: {{ $v.chatModelEndpoint | quote }}
+{{- end }}
+{{- if or $v.chatApiKey $v.chatApiKeyExistingSecret }}
+- name: CHAT_API_KEY
+  valueFrom:
+    secretKeyRef:
+      {{- include "textual.chatApiKeySecretRef" . | nindent 6 }}
+{{- end }}
+{{- end -}}
 
 {{/*
 Custom CA volume: mounts a customer-supplied ConfigMap of PEM-encoded CAs.

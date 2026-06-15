@@ -136,19 +136,46 @@ serviceAccount:
 
 solarStatisticsSeed: <any-integer>
 
-# Optional, required when using using llm synthesis
-openAiApiKey: <open-ai-api-key>
-# openAiApiKeyExistingSecret: <secret-name>
-# openAiApiKeyExistingSecretKey: secret
+# LLM provider credentials — configure only the providers you use.
+# For each provider, supply either apiKey (Helm creates a K8s Secret) or
+# existingSecret/existingSecretKey (reference a pre-existing K8s Secret).
+#llmProvider:
+#  # OpenAI or any OpenAI-compatible endpoint (Azure OpenAI, vLLM, Ollama, etc.)
+#  openai:
+#    apiKey: ""
+#    # apiKeyExistingSecret: <secret-name>
+#    # apiKeyExistingSecretKey: secret
+#    url: ""
+#  # Google AI Studio
+#  googleAiStudio:
+#    apiKey: ""
+#    # apiKeyExistingSecret: <secret-name>
+#    # apiKeyExistingSecretKey: secret
+#    url: "https://generativelanguage.googleapis.com"
+#  # Google Vertex AI
+#  vertexAi:
+#    apiKey: ""
+#    # apiKeyExistingSecret: <secret-name>
+#    # apiKeyExistingSecretKey: secret
+#    url: "https://us-central1-aiplatform.googleapis.com"
+#  # Amazon Bedrock
+#  bedrock:
+#    region: "us-east-1"
+#    maxTokens: 64000
 
-# chatApiKeyExistingSecret: <secret-name>
-# chatApiKeyExistingSecretKey: secret
+# Default LLM Configuration
+# The LLM configuration to use if one is not specified for a given feature.
+# If chat provider/model or synthesis provider/model is not proided, use these instead
+#defaultLlmProvider: VertexAi
+#defaultLlmModel: gemini-2.5-flash
+
+# LLM Synthesis / Classification configuration
+#llmSynthesisProvider:
+#llmSynthesisModelName:
 
 # AI Chat Config
-#chatLlmProvider: gemini
-#chatModelEndpoint: https://generativelanguage.googleapis.com
+#chatLlmProvider: VertexAi
 #chatModelName: gemini-2.5-flash
-#chatApiKey: <api-key>
 
 # OCR Credentials
 #azureDocIntelligenceKey: <key>
