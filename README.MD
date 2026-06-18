@@ -104,6 +104,8 @@ The same pattern applies to all other sensitive values:
 |---|---|---|---|
 | `openAiApiKey` | `openAiApiKeyExistingSecret` | `openAiApiKeyExistingSecretKey` | `secret` |
 | `chatApiKey` | `chatApiKeyExistingSecret` | `chatApiKeyExistingSecretKey` | `secret` |
+| `amplitudeApiKey` | `amplitudeApiKeyExistingSecret` | `amplitudeApiKeyExistingSecretKey` | `secret` |
+| `analyticBackendSalt` | `analyticBackendSaltExistingSecret` | `analyticBackendSaltExistingSecretKey` | `secret` |
 | `azureDocIntelligenceKey` | `azureDocIntelligenceKeyExistingSecret` | `azureDocIntelligenceKeyExistingSecretKey` | `secret` |
 | `googleClientSecret` | `googleClientSecretExistingSecret` | `googleClientSecretExistingSecretKey` | `secret` |
 | `githubClientSecret` | `githubClientSecretExistingSecret` | `githubClientSecretExistingSecretKey` | `secret` |
@@ -111,6 +113,12 @@ The same pattern applies to all other sensitive values:
 | `keycloakClientSecret` | `keycloakClientSecretExistingSecret` | `keycloakClientSecretExistingSecretKey` | `secret` |
 
 When using an `ExistingSecret`, the chart will not create a Kubernetes secret for that value — it will reference the named secret directly. For optional values, if neither the direct value nor `ExistingSecret` is set, the corresponding environment variable is simply omitted.
+
+### Analytics
+
+Release images do not include Amplitude credentials. To enable analytics, provide `amplitudeApiKey` and `analyticBackendSalt`, or reference existing Kubernetes Secrets with `amplitudeApiKeyExistingSecret` and `analyticBackendSaltExistingSecret`.
+
+The chart injects these values into the API server and worker pods as `AMPLITUDE_API_KEY` and `ANALYTIC_BACKEND_SALT`. ML, Roberta, ASR, and other service pods do not receive them.
 
 
 ### Authorization to access Tonic application Docker images

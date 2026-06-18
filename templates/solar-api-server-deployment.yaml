@@ -67,6 +67,7 @@ spec:
             value: {{ $value | quote }}
           {{- end }}
           {{- end }}
+          {{- include "textual.analyticsEnv" . | nindent 10 }}
           - name: SOLAR_SECRET
             valueFrom:
               secretKeyRef:

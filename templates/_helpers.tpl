@@ -279,6 +279,37 @@ name: {{ .Values.azureDocIntelligenceKeyExistingSecret | default "azure-document
 key: {{ .Values.azureDocIntelligenceKeyExistingSecretKey | default "secret" }}
 {{- end }}
 
+{{- define "textual.amplitudeApiKeySecretRef" -}}
+name: {{ .Values.amplitudeApiKeyExistingSecret | default "amplitude-api-key" }}
+key: {{ .Values.amplitudeApiKeyExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{- define "textual.analyticBackendSaltSecretRef" -}}
+name: {{ .Values.analyticBackendSaltExistingSecret | default "analytic-backend-salt" }}
+key: {{ .Values.analyticBackendSaltExistingSecretKey | default "secret" }}
+{{- end }}
+
+{{/*
+Analytics runtime env vars for API and worker pods.
+
+These secrets are intentionally runtime-only so release images do not contain
+Amplitude credentials in Dockerfile ENV, image config, or image history.
+*/}}
+{{- define "textual.analyticsEnv" -}}
+{{- if or .Values.amplitudeApiKey .Values.amplitudeApiKeyExistingSecret }}
+- name: AMPLITUDE_API_KEY
+  valueFrom:
+    secretKeyRef:
+      {{- include "textual.amplitudeApiKeySecretRef" . | nindent 6 }}
+{{- end }}
+{{- if or .Values.analyticBackendSalt .Values.analyticBackendSaltExistingSecret }}
+- name: ANALYTIC_BACKEND_SALT
+  valueFrom:
+    secretKeyRef:
+      {{- include "textual.analyticBackendSaltSecretRef" . | nindent 6 }}
+{{- end }}
+{{- end }}
+
 {{/*
 LLM provider credentials and feature config env vars.
 
