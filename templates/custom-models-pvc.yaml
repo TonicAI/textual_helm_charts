@@ -7,12 +7,13 @@ metadata:
   labels:
     {{- include "textual.allLabels" (list $ (dict "app" "custom-models")) | nindent 4 }}
   annotations:
+    helm.sh/resource-policy: keep
     {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteMany
-  {{- if .Values.customModels.storageClassName }}
-  storageClassName: {{ .Values.customModels.storageClassName }}
+  {{- if hasKey .Values.customModels "storageClassName" }}
+  storageClassName: {{ .Values.customModels.storageClassName | quote }}
   {{- end }}
   resources:
     requests:

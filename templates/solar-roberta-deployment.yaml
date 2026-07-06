@@ -17,7 +17,7 @@ metadata:
   annotations:
     {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ (.Values.textual_roberta).numberOfRobertaWorkers | default 1 }}
   selector:
     matchLabels:
       app: textual-roberta
@@ -87,6 +87,10 @@ spec:
         {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: ENABLE_LOG_COLLECTION
             value: {{ .Values.enableLogCollection | quote }}
+        {{- end }}
+        {{- if (.Values.textual_roberta).textualRobertaParallelism | quote }}
+          - name: TEXTUAL_ROBERTA_WORKERS
+            value: {{quote .Values.textual_roberta.textualRobertaParallelism }}
         {{- end }}
         {{- if (.Values.textual_roberta).env }}
         {{- range $key, $value := .Values.textual_roberta.env }}

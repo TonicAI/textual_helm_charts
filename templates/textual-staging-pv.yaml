@@ -1,0 +1,61 @@
+{{/*
+Static PersistentVolumes for the chart's RWX PVCs.
+
+A PV is emitted only when the corresponding <feature>.staticPv.csi block is set
+in values. The CSI source is passed through verbatim, so any provider works
+(efs.csi.aws.com, filestore.csi.storage.gke.io, file.csi.azure.com,
+nfs.csi.k8s.io, etc.). When omitted, the PVC falls back to dynamic provisioning
+via .storageClassName (or the cluster default).
+*/}}
+{{- $ns := .Release.Namespace }}
+{{- $items := list }}
+{{- with (.Values.customModels).staticPv }}
+  {{- if .csi }}
+    {{- $items = append $items (dict
+        "name" (.name | default (printf "%s-custom-models" $ns))
+        "claimName" "custom-models-pvc"
+        "size" ($.Values.customModels.size | default "10Gi")
+        "reclaimPolicy" (.reclaimPolicy | default "Retain")
+        "storageClassName" (.storageClassName | default "")
+        "accessModes" (.accessModes | default (list "ReadWriteMany"))
+        "csi" .csi
+    ) }}
+  {{- end }}
+{{- end }}
+{{- with (.Values.luceneIndex).staticPv }}
+  {{- if .csi }}
+    {{- $items = append $items (dict
+        "name" (.name | default (printf "%s-lucene" $ns))
+        "claimName" "lucene-index-pvc"
+        "size" ($.Values.luceneIndex.size | default "10Gi")
+        "reclaimPolicy" (.reclaimPolicy | default "Retain")
+        "storageClassName" (.storageClassName | default "")
+        "accessModes" (.accessModes | default (list "ReadWriteMany"))
+        "csi" .csi
+    ) }}
+  {{- end }}
+{{- end }}
+{{- range $i, $pv := $items }}
+{{- if $i }}
+---
+{{- end }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $pv.name }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  capacity:
+    storage: {{ $pv.size }}
+  volumeMode: Filesystem
+  accessModes:
+{{ toYaml $pv.accessModes | indent 4 }}
+  persistentVolumeReclaimPolicy: {{ $pv.reclaimPolicy }}
+  storageClassName: {{ $pv.storageClassName | quote }}
+  csi:
+{{ toYaml $pv.csi | indent 4 }}
+  claimRef:
+    namespace: {{ $ns }}
+    name: {{ $pv.claimName }}
+{{- end }}

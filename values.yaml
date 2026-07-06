@@ -94,8 +94,12 @@ textual_ml:
     #   operator: "Exists"
     #   effect: "NoSchedule"
 textual_roberta:
-  # useGPU will determine if the ML container will use a GPU or not. If not provided, the default value is false
+  # useGPU will determine if the Roberta container will use a GPU or not. If not provided, the default value is false
   useGpu: false
+  # numberOfRobertaWorkers will determine how many Roberta containers are deployed when installing the helm chart. If using GPU, we recommend one per GPU
+  numberOfRobertaWorkers: 1
+  # textualRobertaParallelism will determine how many worker processes are deployed per Roberta container. For GPUs, we recommend 1 process per 5GB of VRAM
+  textualRobertaParallelism: 1
   env: {}
   nodeSelector: {}
   tolerations:
@@ -289,6 +293,25 @@ luceneIndex:
   enabled: false
   # storageClassName: ""  # Optional: specify a storage class name, uses cluster default if not set
   size: 10Gi
+  # Optional: pre-bind this PVC to a chart-managed static PV. When set, the chart
+  # emits a PersistentVolume whose claimRef targets lucene-index-pvc and whose CSI
+  # source is the block below. Combine with storageClassName: "" above to opt out
+  # of dynamic provisioning. Works with any CSI RWX driver.
+  # staticPv:
+  #   name: ""                        # optional, defaults to <namespace>-lucene
+  #   reclaimPolicy: Retain           # optional, defaults to Retain
+  #   accessModes: [ReadWriteMany]    # optional, defaults to [ReadWriteMany]
+  #   storageClassName: ""            # optional, defaults to ""
+  #   csi:                            # required to emit the PV
+  #     driver: efs.csi.aws.com
+  #     volumeHandle: fs-XXXXXXXX::fsap-XXXXXXXX
+  #   # GCP example:
+  #   # csi:
+  #   #   driver: filestore.csi.storage.gke.io
+  #   #   volumeHandle: modeInstance/us-central1-a/my-fs/my-share
+  #   #   volumeAttributes:
+  #   #     ip: 10.0.0.2
+  #   #     volume: my-share
 
 # Custom Models Shared Storage Configuration
 # Enable this so imported entity LoRA adapters (Custom Entity Library import feature) survive pod
@@ -302,3 +325,8 @@ customModels:
   enabled: false
   # storageClassName: ""  # Optional: specify a storage class name, uses cluster default if not set
   size: 100Mi
+  # See luceneIndex.staticPv above for the full shape and per-provider examples.
+  # staticPv:
+  #   csi:
+  #     driver: efs.csi.aws.com
+  #     volumeHandle: fs-XXXXXXXX::fsap-XXXXXXXX
