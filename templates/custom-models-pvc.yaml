@@ -7,7 +7,6 @@ metadata:
   labels:
     {{- include "textual.allLabels" (list $ (dict "app" "custom-models")) | nindent 4 }}
   annotations:
-    helm.sh/resource-policy: keep
     {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   accessModes:

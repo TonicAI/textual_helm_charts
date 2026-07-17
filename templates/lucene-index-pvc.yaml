@@ -7,7 +7,6 @@ metadata:
   labels:
     {{- include "textual.allLabels" (list $ (dict "app" "lucene-index")) | nindent 4 }}
   annotations:
-    helm.sh/resource-policy: keep
     {{- include "textual.allAnnotations" (list $) | nindent 4 }}
 spec:
   accessModes:
@@ -19,4 +18,3 @@ spec:
     requests:
       storage: {{ .Values.luceneIndex.size | default "10Gi" }}
 {{- end }}
-
