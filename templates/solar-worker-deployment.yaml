@@ -119,6 +119,7 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
+            {{- include "textual.analyticsEnv" . | nindent 12 }}
             {{- include "textual.customCa.env" . | nindent 12 }}
           {{- if (.Values.textual_worker).image }}
           image: {{ .Values.textual_worker.image }}:{{ .Values.textualVersion }}

@@ -29,6 +29,15 @@ textualDatabase:
   ## Optional, if you want to customize the schema name used (defaults to "public")
   # schema: public
 
+# Optional analytics runtime settings. Release images do not contain analytics
+# secrets; set these values, or reference existing Kubernetes Secrets, when the
+# deployment should send Amplitude events.
+amplitudeApiKey: ""
+# amplitudeApiKeyExistingSecret: <secret-name>
+# amplitudeApiKeyExistingSecretKey: secret
+analyticBackendSalt: ""
+# analyticBackendSaltExistingSecret: <secret-name>
+# analyticBackendSaltExistingSecretKey: secret
 
 # Optional Labels to add to all resources - if there is a conflict we use allLabels
 # allLabels: {
