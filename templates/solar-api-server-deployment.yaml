@@ -61,12 +61,7 @@ spec:
             readOnly: true
           {{- include "textual.customCa.volumeMount" . | nindent 10 }}
           env:
-          {{- if (.Values.textual_api_server).env}}
-          {{- range $key, $value := .Values.textual_api_server.env }}
-          - name: {{ $key }}
-            value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+          {{- include "textual.applicationEnv" (list $ .Values.textual_api_server.env) | nindent 10 }}
           - name: SOLAR_SECRET
             valueFrom:
               secretKeyRef:
@@ -98,6 +93,16 @@ spec:
           {{- if .Values.solarAuthRpmLimit }}
           - name: SOLAR_AUTH_RPM_LIMIT
             value: {{quote .Values.solarAuthRpmLimit }}
+          {{- end }}
+          {{- if or .Values.azureDocIntelligenceKey .Values.azureDocIntelligenceKeyExistingSecret }}
+          - name: SOLAR_AZURE_DOC_INTELLIGENCE_KEY
+            valueFrom:
+              secretKeyRef:
+                {{- include "textual.azureDocIntelligenceKeySecretRef" . | nindent 16 }}
+          {{- end }}
+          {{- if .Values.azureDocIntelligenceEndpoint }}
+          - name: SOLAR_AZURE_DOC_INTELLIGENCE_ENDPOINT
+            value: {{ .Values.azureDocIntelligenceEndpoint }}
           {{- end }}
           {{- include "textual.llmEnv" . | nindent 10 }}
           {{- if .Values.googleClientId }}

@@ -113,12 +113,7 @@ spec:
               value: {{ .Values.azureDocIntelligenceEndpoint }}
             {{- end }}
             {{- include "textual.llmEnv" . | nindent 12 }}
-            {{- if (.Values.textual_worker).env}}
-            {{- range $key, $value := .Values.textual_worker.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- end }}
+            {{- include "textual.applicationEnv" (list $ .Values.textual_worker.env) | nindent 12 }}
             {{- include "textual.customCa.env" . | nindent 12 }}
           {{- if (.Values.textual_worker).image }}
           image: {{ .Values.textual_worker.image }}:{{ .Values.textualVersion }}

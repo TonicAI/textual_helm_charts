@@ -280,6 +280,26 @@ key: {{ .Values.azureDocIntelligenceKeyExistingSecretKey | default "secret" }}
 {{- end }}
 
 {{/*
+Render application-specific environment values without duplicating variables
+owned by dedicated chart settings.
+*/}}
+{{- define "textual.applicationEnv" -}}
+{{- $top := first . -}}
+{{- $env := index . 1 -}}
+{{- range $key, $value := $env }}
+{{- $hasDedicatedValue := or
+      (and (eq $key "SOLAR_AZURE_DOC_INTELLIGENCE_KEY")
+        (or $top.Values.azureDocIntelligenceKey $top.Values.azureDocIntelligenceKeyExistingSecret))
+      (and (eq $key "SOLAR_AZURE_DOC_INTELLIGENCE_ENDPOINT")
+        $top.Values.azureDocIntelligenceEndpoint) }}
+{{- if not $hasDedicatedValue }}
+- name: {{ $key }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
 LLM provider credentials and feature config env vars.
 
 Supports both new structured config (llmProvider.*, defaultLlmProvider, etc.) and legacy
