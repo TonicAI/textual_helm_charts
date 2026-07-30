@@ -44,9 +44,9 @@ spec:
             {{- toYaml $resources | nindent 10 }}
         volumeMounts:
           - name: var-logs-public
-            mountPath: /app/logs_public
+            mountPath: /usr/bin/textual/logs_public
           - name: var-logs
-            mountPath: /app/logs
+            mountPath: /usr/bin/textual/logs
           - name: tmp
             mountPath: /tmp
         env: []
