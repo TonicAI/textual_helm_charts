@@ -42,6 +42,9 @@ textualDatabase:
 
 textual_api_server:
   env: {}
+  # Comma separated list of user emails or SSO group names that should have the Admin role in Tonic.
+  # Email addresses are case-insensitive; group names are case-sensitive.
+  administrators: ""
   nodeSelector: {}
   tolerations:
     []

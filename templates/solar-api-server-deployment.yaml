@@ -94,6 +94,10 @@ spec:
           - name: SOLAR_AUTH_RPM_LIMIT
             value: {{quote .Values.solarAuthRpmLimit }}
           {{- end }}
+          {{- if .Values.textual_api_server.administrators }}
+          - name: SOLAR_ADMINISTRATORS
+            value: {{ .Values.textual_api_server.administrators | quote }}
+          {{- end }}
           {{- if or .Values.azureDocIntelligenceKey .Values.azureDocIntelligenceKeyExistingSecret }}
           - name: SOLAR_AZURE_DOC_INTELLIGENCE_KEY
             valueFrom:
