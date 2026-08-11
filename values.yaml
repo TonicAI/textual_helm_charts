@@ -103,6 +103,17 @@ textual_roberta:
   numberOfRobertaWorkers: 1
   # textualRobertaParallelism will determine how many worker processes are deployed per Roberta container. For GPUs, we recommend 1 process per 5GB of VRAM
   textualRobertaParallelism: 1
+  metrics:
+    # Select either annotationScrape or podMonitor to avoid duplicate scrapes.
+    annotationScrape:
+      enabled: false
+    # Enable only when the cluster has Prometheus Operator PodMonitor CRDs.
+    podMonitor:
+      enabled: false
+      interval: 60s
+      scrapeTimeout: 10s
+      # Add labels required by the Prometheus installation's PodMonitor selector.
+      additionalLabels: {}
   env: {}
   nodeSelector: {}
   tolerations:

@@ -1,0 +1,25 @@
+{{- $metrics := (.Values.textual_roberta).metrics | default dict -}}
+{{- $podMonitor := $metrics.podMonitor | default dict -}}
+{{- if $podMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: textual-roberta
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "textual.allLabels" (list $ ($podMonitor.additionalLabels | default dict)) | nindent 4 }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app: textual-roberta
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: {{ $podMonitor.interval | default "60s" | quote }}
+      scrapeTimeout: {{ $podMonitor.scrapeTimeout | default "10s" | quote }}
+{{- end }}

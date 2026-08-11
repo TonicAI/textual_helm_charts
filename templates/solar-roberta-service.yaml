@@ -11,6 +11,11 @@ spec:
   selector:
     app: textual-roberta
   ports:
-    - port: 8801
+    - name: https
+      port: 8801
+      targetPort: https
+    - name: metrics
+      port: 8802
+      targetPort: metrics
 status:
   loadBalancer: {}

@@ -61,6 +61,8 @@ spec:
             mountPath: /var/log/supervisor
           - name: supervisor-log
             mountPath: /var/run/supervisor
+          - name: solar-readiness
+            mountPath: /var/run/solar
           - name: custom-models
             mountPath: /usr/bin/textual/custom_models
           - name: tmp
@@ -143,6 +145,8 @@ spec:
         - name: supervisor-run
           emptyDir: {}
         - name: supervisor-log
+          emptyDir: {}
+        - name: solar-readiness
           emptyDir: {}
         - name: custom-models
           {{- if .Values.customModels.enabled }}

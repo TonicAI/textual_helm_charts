@@ -7,6 +7,12 @@
 {{- else -}}
   {{- $resources = coalesce .Values.textual_roberta.resources (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "2Gi" "cpu" "2" "ephemeral-storage" "512Mi")) -}}
 {{- end -}}
+{{- $metrics := (.Values.textual_roberta).metrics | default dict -}}
+{{- $annotationScrape := $metrics.annotationScrape | default dict -}}
+{{- $podAnnotations := dict -}}
+{{- if $annotationScrape.enabled -}}
+  {{- $podAnnotations = dict "prometheus.io/path" "/metrics" "prometheus.io/port" "8802" "prometheus.io/scrape" "true" -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,7 +35,7 @@ spec:
       labels:
         {{- include "textual.allLabels" (list $ (dict "app" "textual-roberta")) | nindent 8 }}
       annotations:
-        {{- include "textual.allAnnotations" (list $) | nindent 8 }}
+        {{- include "textual.allAnnotations" (list $ $podAnnotations) | nindent 8 }}
     spec:
       affinity:
         podAntiAffinity:
@@ -116,7 +122,10 @@ spec:
         imagePullPolicy: IfNotPresent
         name: textual-roberta
         ports:
-          - containerPort: 8801
+          - name: https
+            containerPort: 8801
+          - name: metrics
+            containerPort: 8802
         resources:
             {{- toYaml $resources | nindent 10 }}
         startupProbe:
