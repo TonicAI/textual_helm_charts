@@ -90,9 +90,23 @@ spec:
           - name: ENABLE_LOG_COLLECTION
             value: {{ .Values.enableLogCollection | quote }}
         {{- end }}
-        {{- if (.Values.textual_ml).textualMlParallelism | quote }}
+        {{- if (.Values.textual_ml).textualMlParallelism }}
+          - name: TEXTUAL_ML_PARALLELISM
+            value: {{quote .Values.textual_ml.textualMlParallelism }}
           - name: TEXTUAL_ML_WORKERS
             value: {{quote .Values.textual_ml.textualMlParallelism }}
+        {{- end }}
+        {{- if (.Values.textual_ml).documentWorkers }}
+          - name: TEXTUAL_DOCUMENT_WORKERS
+            value: {{quote .Values.textual_ml.documentWorkers }}
+        {{- end }}
+        {{- if (.Values.textual_ml).ocrWorkers }}
+          - name: TEXTUAL_OCR_WORKERS
+            value: {{quote .Values.textual_ml.ocrWorkers }}
+        {{- end }}
+        {{- if (.Values.textual_ml).convertDateWorkers }}
+          - name: TEXTUAL_CONVERT_DATE_WORKERS
+            value: {{quote .Values.textual_ml.convertDateWorkers }}
         {{- end }}
         {{- if (.Values.textual_ml).env }}
         {{- range $key, $value := .Values.textual_ml.env }}

@@ -92,6 +92,8 @@ spec:
               value: "true"
             - name: SOLAR_PY_URL
               value: https://textual-ml:7701
+            - name: SOLAR_ROBERTA_URL
+              value: https://textual-roberta:8801
             - name: SOLAR_WORKER_HEALTH_PORT_HTTPS
               value: "8443"
             {{- if .Values.solarStatisticsSeed }}

@@ -87,8 +87,16 @@ textual_ml:
   useGpu: false
   # numberOfMlWorkers will determine how many ML containers are deployed when installing the helm chart. If using GPU, we recommend one per GPU
   numberOfMlWorkers: 1
-  # textualMlParallelism will determine how many ML worker processes are deployed per ML container. For GPUs, we recommend 1 process per 5GB of VRAM
-  textualMlParallelism: 1
+  # Bounds the total vCPU parallelism that one ML container can use. 2 means it will use 2 cores total.
+  # Defaults to 2 to match the default resource request. Unset will have it spread across all vCPUs it has access to
+  textualMlParallelism: 2
+  # Per-pool overrides, each defaulting to a share of the parallelism budget above:
+  # documentWorkers sizes the PDF/DOCX process pool, ocrWorkers the OCR process pool
+  # (each worker holds the signature-detection model), convertDateWorkers the date
+  # inference threads.
+  # documentWorkers: 6
+  # ocrWorkers: 2
+  # convertDateWorkers: 4
   env: {}
   nodeSelector: {}
   tolerations:

@@ -235,6 +235,8 @@ spec:
           {{- end }}
           - name: SOLAR_PY_URL
             value: https://textual-ml:7701
+          - name: SOLAR_ROBERTA_URL
+            value: https://textual-roberta:8801
           {{- if not $httpsOnly }}
           - name: SOLAR_PORT_HTTP
             value: {{ $httpPort | quote }}
