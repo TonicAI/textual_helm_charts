@@ -96,15 +96,18 @@ spec:
           - name: TEXTUAL_ML_WORKERS
             value: {{quote .Values.textual_ml.textualMlParallelism }}
         {{- end }}
-        {{- if (.Values.textual_ml).documentWorkers }}
+        {{/* 0 disables a request class, and Helm treats 0 as falsy: an `if` on the value
+             itself would drop the variable and silently auto-size the class instead. These
+             test for the key being set, not for it being non-zero. */}}
+        {{- if not (kindIs "invalid" (.Values.textual_ml).documentWorkers) }}
           - name: TEXTUAL_DOCUMENT_WORKERS
             value: {{quote .Values.textual_ml.documentWorkers }}
         {{- end }}
-        {{- if (.Values.textual_ml).ocrWorkers }}
+        {{- if not (kindIs "invalid" (.Values.textual_ml).ocrWorkers) }}
           - name: TEXTUAL_OCR_WORKERS
             value: {{quote .Values.textual_ml.ocrWorkers }}
         {{- end }}
-        {{- if (.Values.textual_ml).convertDateWorkers }}
+        {{- if not (kindIs "invalid" (.Values.textual_ml).convertDateWorkers) }}
           - name: TEXTUAL_CONVERT_DATE_WORKERS
             value: {{quote .Values.textual_ml.convertDateWorkers }}
         {{- end }}
