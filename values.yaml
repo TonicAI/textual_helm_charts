@@ -83,9 +83,7 @@ textual_worker:
   # volumes:
   # volumeMounts:
 textual_ml:
-  # useGPU will determine if the ML container will use a GPU or not. If not provided, the default value is false
-  useGpu: false
-  # numberOfMlWorkers will determine how many ML containers are deployed when installing the helm chart. If using GPU, we recommend one per GPU
+  # numberOfMlWorkers will determine how many ML containers are deployed when installing the helm chart.
   numberOfMlWorkers: 1
   # Bounds the total vCPU parallelism that one ML container can use. 2 means it will use 2 cores total.
   # Defaults to 2 to match the default resource request. Unset will have it spread across all vCPUs it has access to
@@ -161,6 +159,21 @@ serviceAccount:
   name: textual
 
 solarStatisticsSeed: <any-integer>
+
+# Which peers the API takes the client address from. Every per-IP rate limit partitions on that
+# address, so a caller able to choose it can both mint a fresh partition per request and pin a 429
+# on someone else's address.
+# Leave unset when the API is only reachable through the ingress — it owns X-Forwarded-For, so the
+# header is honoured from any peer. Set it to the ingress or load balancer addresses (comma
+# separated IPs and/or CIDR ranges) when the API is also reachable directly, or to "none" when no
+# proxy fronts it at all. Any peer not listed keeps its socket address, which cannot be spoofed.
+#solarTrustedProxies: "10.0.0.0/8, 192.168.1.5"
+
+# How many proxies append to X-Forwarded-For, counted from the right. Defaults to 1, which matches a
+# single appending ingress. Set it to the exact number of appending hops — an ALB in front of an
+# nginx ingress is 2 — or every caller resolves to the innermost proxy and shares one rate-limit
+# bucket. Set it higher than the real hop count and a caller can supply its own address.
+#solarForwardedHopCount: 2
 
 # LLM provider credentials — configure only the providers you use.
 # For each provider, supply either apiKey (Helm creates a K8s Secret) or

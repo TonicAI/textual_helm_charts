@@ -1,12 +1,6 @@
 {{- $tolerations :=
   .Values.textual_ml.tolerations
 }}
-{{- $resources := dict -}}
-{{- if .Values.textual_ml.useGpu -}}
-  {{- $resources = coalesce .Values.textual_ml.resources (dict "limits" (dict "memory" "8Gi" "nvidia.com/gpu" "1") "requests" (dict "memory" "2Gi" "cpu" "2" "ephemeral-storage" "1Gi")) -}}
-{{- else -}}
-  {{- $resources = coalesce .Values.textual_ml.resources (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "2Gi" "cpu" "2" "ephemeral-storage" "512Mi")) -}}
-{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -119,25 +113,17 @@ spec:
         {{- end }}
           - name: ENVIRONMENT_NAME
             value: {{ .Values.environmentName }}
-        {{- if (.Values.textual_ml).useGpu }}
-          {{- if (.Values.textual_ml).image }}
+        {{- if (.Values.textual_ml).image }}
         image: {{ .Values.textual_ml.image }}:{{ .Values.textual_ml.version | default .Values.textualVersion }}
-          {{- else }}
-        image: quay.io/tonicai/textual-ml-gpu:{{ .Values.textualVersion }}
-          {{- end }}
         {{- else }}
-          {{- if (.Values.textual_ml).image }}
-        image: {{ .Values.textual_ml.image }}:{{ .Values.textual_ml.version | default .Values.textualVersion }}
-          {{- else }}
         image: quay.io/tonicai/textual-ml:{{ .Values.textualVersion }}
-          {{- end }}
         {{- end }}
         imagePullPolicy: IfNotPresent
         name: textual-ml
         ports:
           - containerPort: 7701
         resources:
-            {{- toYaml $resources | nindent 10 }}
+            {{- include "textual.solarPyResources" . | nindent 10 }}
         startupProbe:
           httpGet:
             path: /health

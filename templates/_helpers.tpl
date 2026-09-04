@@ -229,6 +229,21 @@ name: {{ .Values.textualEncryptionSecretExistingSecret | default "textual-encryp
 key: {{ .Values.textualEncryptionSecretExistingSecretKey | default "secret" }}
 {{- end }}
 
+{{/*
+Keep Solar.Py CPU-only while preserving configured non-GPU resources.
+*/}}
+{{- define "textual.solarPyResources" -}}
+{{- $defaults := dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "2Gi" "cpu" "2" "ephemeral-storage" "512Mi") -}}
+{{- $resources := deepCopy (coalesce .Values.textual_ml.resources $defaults) -}}
+{{- range $kind := list "requests" "limits" -}}
+{{- $values := get $resources $kind -}}
+{{- if kindIs "map" $values -}}
+{{- $_ := unset $values "nvidia.com/gpu" -}}
+{{- end -}}
+{{- end -}}
+{{- toYaml $resources -}}
+{{- end }}
+
 {{- define "textual.openAiApiKeySecretRef" -}}
 name: {{ .Values.openAiApiKeyExistingSecret | default "openai-api-key" }}
 key: {{ .Values.openAiApiKeyExistingSecretKey | default "secret" }}

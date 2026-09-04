@@ -94,6 +94,22 @@ spec:
           - name: SOLAR_AUTH_RPM_LIMIT
             value: {{quote .Values.solarAuthRpmLimit }}
           {{- end }}
+          {{- if .Values.solarTrustedProxies }}
+          - name: SOLAR_TRUSTED_PROXIES
+            value: {{quote .Values.solarTrustedProxies }}
+          {{- end }}
+          {{- if not (kindIs "invalid" .Values.solarForwardedHopCount) }}
+          - name: SOLAR_FORWARDED_HOP_COUNT
+            value: {{quote .Values.solarForwardedHopCount }}
+          {{- end }}
+          {{- if not (kindIs "invalid" .Values.solarAnonymousFallbackRpmLimit) }}
+          - name: SOLAR_ANONYMOUS_FALLBACK_RPM_LIMIT
+            value: {{quote .Values.solarAnonymousFallbackRpmLimit }}
+          {{- end }}
+          {{- if not (kindIs "invalid" .Values.solarFailedAuthRpmLimit) }}
+          - name: SOLAR_FAILED_AUTH_RPM_LIMIT
+            value: {{quote .Values.solarFailedAuthRpmLimit }}
+          {{- end }}
           {{- if .Values.textual_api_server.administrators }}
           - name: SOLAR_ADMINISTRATORS
             value: {{ .Values.textual_api_server.administrators | quote }}
