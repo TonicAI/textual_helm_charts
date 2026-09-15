@@ -8,6 +8,7 @@
   {{- $resources = coalesce .Values.textual_roberta.resources (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "2Gi" "cpu" "2" "ephemeral-storage" "512Mi")) -}}
 {{- end -}}
 {{- $metrics := (.Values.textual_roberta).metrics | default dict -}}
+{{- $profiling := (.Values.textual_roberta).profiling | default dict -}}
 {{- $annotationScrape := $metrics.annotationScrape | default dict -}}
 {{- $podAnnotations := dict -}}
 {{- if $annotationScrape.enabled -}}
@@ -71,6 +72,10 @@ spec:
             mountPath: /usr/bin/textual/custom_models
           - name: tmp
             mountPath: /tmp
+          {{- if $profiling.enabled }}
+          - name: profiles
+            mountPath: /profiles
+          {{- end }}
         env:
           - name: SOLAR_DB_DATABASE
             value: {{ .Values.textualDatabase.dbName }}
@@ -162,3 +167,7 @@ spec:
           {{- end }}
         - name: tmp
           emptyDir: {}
+        {{- if $profiling.enabled }}
+        - name: profiles
+          emptyDir: {}
+        {{- end }}

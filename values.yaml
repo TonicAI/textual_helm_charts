@@ -120,6 +120,10 @@ textual_roberta:
       scrapeTimeout: 10s
       # Add labels required by the Prometheus installation's PodMonitor selector.
       additionalLabels: {}
+  # Mount an ephemeral writable /profiles directory for controlled profiling.
+  # Profiling remains disabled until the corresponding env settings are added below.
+  profiling:
+    enabled: false
   env: {}
   nodeSelector: {}
   tolerations:
