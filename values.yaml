@@ -41,6 +41,10 @@ textualDatabase:
 # }
 
 textual_api_server:
+  # Extra environment variables for the API server, as NAME: value pairs. For example, the largest file it accepts
+  # for upload, in MB (default 250, at most 2047):
+  #   env:
+  #     SOLAR_UPLOAD_MAX_FILE_SIZE_MB: "500"
   env: {}
   # Comma separated list of user emails or SSO group names that should have the Admin role in Tonic.
   # Email addresses are case-insensitive; group names are case-sensitive.
