@@ -214,6 +214,23 @@ Select the busybox image
 {{ end -}}
 {{- end }}
 
+{{/*
+Whether a component of the chart is deployed: on unless its `enabled` value is explicitly false. Called as
+(include "textual.componentEnabled" (list $ "textual_api_server")); prints "true" or "false". Lets an installation run
+textual-ml and textual-roberta alone (the graph pipeline's qualification environments) without the API server, the
+worker or the database they depend on; the default, every key unset, is the full application as before.
+*/}}
+{{- define "textual.componentEnabled" -}}
+{{- $root := first . -}}
+{{- $config := index $root.Values (index . 1) | default dict -}}
+{{- if hasKey $config "enabled" -}}{{ $config.enabled }}{{- else -}}true{{- end -}}
+{{- end }}
+
+{{/* Whether anything that needs the database, the license and the encryption secret is deployed. */}}
+{{- define "textual.appEnabled" -}}
+{{- if or (eq (include "textual.componentEnabled" (list . "textual_api_server")) "true") (eq (include "textual.componentEnabled" (list . "textual_worker")) "true") -}}true{{- else -}}false{{- end -}}
+{{- end }}
+
 {{- define "textual.dbPasswordSecretRef" -}}
 name: {{ .Values.textualDatabase.existingSecret | default "textual-db-password" }}
 key: {{ .Values.textualDatabase.existingSecretKey | default "password" }}

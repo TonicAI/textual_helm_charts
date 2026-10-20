@@ -39,10 +39,6 @@ spec:
         {{ .Values.textual_ml.nodeSelector | toYaml | nindent 8 }}
       tolerations:
         {{- include "textual.tolerations" (list $ $tolerations) | nindent 8 }}
-      initContainers:
-        - name: wait-for-web-before-startup
-          image: {{- include "textual.busyboxImage" . }}
-          command: [ "sh", "-c", "until nc -z textual-api-server 443 > /dev/null; do echo Waiting for web server.; sleep 2; done;" ]
       containers:
       - securityContext:
           readOnlyRootFilesystem: true
@@ -62,6 +58,7 @@ spec:
           - name: tmp
             mountPath: /tmp
         env:
+          {{- if .Values.textualDatabase }}
           - name: SOLAR_DB_DATABASE
             value: {{ .Values.textualDatabase.dbName }}
           - name: SOLAR_DB_USERNAME
@@ -79,6 +76,7 @@ spec:
           {{- if .Values.textualDatabase.schema }}
           - name: SOLAR_DB_SCHEMA
             value: {{ .Values.textualDatabase.schema }}
+          {{- end }}
           {{- end }}
         {{- if or .Values.enableLogCollection (not (hasKey .Values "enableLogCollection")) }}
           - name: ENABLE_LOG_COLLECTION

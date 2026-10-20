@@ -1,3 +1,4 @@
+{{- if eq (include "textual.componentEnabled" (list $ "textual_worker")) "true" }}
 {{- $tolerations :=
   .Values.textual_worker.tolerations
  }}
@@ -165,3 +166,4 @@ spec:
           {{- end }}
         {{- include "textual.customCa.volume" . | nindent 8 }}
 status: {}
+{{- end }}

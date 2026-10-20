@@ -1,0 +1,48 @@
+{{- /*
+Publishes textual-ml and textual-roberta under hostnames of their own, so something outside the cluster (the
+graph pipeline's Databricks job) can call them. Off by default: a PR environment turns it on, a customer
+installation has no reason to. Same shape as the API server's ingress: the services speak HTTPS themselves.
+*/}}
+{{- $ingress := .Values.inferenceIngress | default dict }}
+{{- if $ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "textual-inference"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    prapps.tonic.ai/managed-dns: external-dns
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: "{{ $ingress.mlHost }},{{ $ingress.robertaHost }}"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-next-upstream-timeout: "3600"
+spec:
+  {{- if $ingress.class }}
+  ingressClassName: {{ $ingress.class }}
+  {{- end }}
+  rules:
+    - host: {{ $ingress.mlHost | quote }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: "textual-ml"
+                port:
+                  number: 7701
+    - host: {{ $ingress.robertaHost | quote }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: "textual-roberta"
+                port:
+                  name: "https"
+{{- end }}

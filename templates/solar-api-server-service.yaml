@@ -1,3 +1,4 @@
+{{- if eq (include "textual.componentEnabled" (list $ "textual_api_server")) "true" }}
 {{- $ports := (.Values.textual_api_server).ports | default dict }}
 {{- $httpsOnly := hasKey $ports "httpsOnly" | ternary $ports.httpsOnly true }}
 {{- $httpPort := $ports.http | default 6880 }}
@@ -35,3 +36,4 @@ spec:
   type: {{ (.Values.textual_api_server).service_type | default "LoadBalancer" }}
   selector:
     app: textual-api-server
+{{- end }}
