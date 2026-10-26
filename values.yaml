@@ -11,8 +11,6 @@ textualEncryptionSecret: <encryption-key>
 # Option B: reference an existing K8s Secret
 # textualEncryptionSecretExistingSecret: <secret-name>
 # textualEncryptionSecretExistingSecretKey: secret  # key within the secret, defaults to "secret"
-asr:
-  create: false
 
 # textualDatabase is the postgres database that will hold information about your workspace.
 textualDatabase:
@@ -128,14 +126,6 @@ textual_roberta:
   # Profiling remains disabled until the corresponding env settings are added below.
   profiling:
     enabled: false
-  env: {}
-  nodeSelector: {}
-  tolerations:
-    []
-    # - key: "foo"
-    #   operator: "Exists"
-  #   effect: "NoSchedule"
-textual_asr:
   env: {}
   nodeSelector: {}
   tolerations:
