@@ -1,0 +1,28 @@
+{{- $top := $ }}
+{{- $httpRoutes := $top.Values.httpRoutes }}
+{{- $inference := $httpRoutes.inference }}
+{{- if (and $inference $inference.create ) }}
+apiVersion: {{ $httpRoutes.apiVersion }}
+kind: HTTPRoute
+metadata:
+  name: "textual-inference"
+  namespace: {{ $top.Release.Namespace }}
+  labels:
+    {{- with ($inference).labels }}
+    {{- . | toYaml | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- include "textual.allAnnotations" (list $) | nindent 4 }}
+spec:
+  parentRefs:
+    {{- $inference.parentRefs | toYaml | nindent 4 }}
+  hostnames:
+    {{- $inference.hostnames | toYaml | nindent 4 }}
+  rules:
+  - backendRefs:
+    - name: "textual-roberta"
+      port: 8801
+    timeouts:
+      request: "0s"
+      backendRequest: "0s"
+{{- end }}

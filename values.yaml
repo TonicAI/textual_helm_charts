@@ -363,3 +363,35 @@ customModels:
   #   csi:
   #     driver: efs.csi.aws.com
   #     volumeHandle: fs-XXXXXXXX::fsap-XXXXXXXX
+
+# configures the chart to create gateway networking resources
+# may be used alongside ingress to facilitate migration
+httpRoutes:
+  apiVersion: "gateway.networking.k8s.io/v1"
+  api:
+    create: false
+    labels: {}
+    hostnames: [] # optional
+    #  - textual.example.com
+    parentRefs: []
+    #  - group: gateway.networking.k8s.io
+    #    kind: Gateway
+    #    name: my-gateway-name
+    #    namespace: my-gateway-namespace
+    #    sectionName: my-gateway-sectionName
+  inference:
+    create: false
+    labels: {}
+    hostnames: [] # optional
+    #  - textual.example.com
+    parentRefs: []
+    #  - group: gateway.networking.k8s.io
+    #    kind: Gateway
+    #    name: my-gateway-name
+    #    namespace: my-gateway-namespace
+    #    sectionName: my-gateway-sectionName
+
+# arbitrary resources to create. resources may contain templating directives
+# and are passed the full templating context meaning .Values, .Release, etc
+# may be referenced
+additionalResources: []
