@@ -44,6 +44,13 @@ textual_api_server:
   #   env:
   #     SOLAR_UPLOAD_MAX_FILE_SIZE_MB: "500"
   env: {}
+  # Used for mounting environment variables from secrets or configmaps
+  #  envFrom:
+  #    - secretRef:
+  #        name: textual-secrets
+  #    - configMapRef:
+  #        name: textual-config
+  envFrom: []
   # Comma separated list of user emails or SSO group names that should have the Admin role in Tonic.
   # Email addresses are case-insensitive; group names are case-sensitive.
   administrators: ""
@@ -72,10 +79,19 @@ textual_api_server:
   service_type: "LoadBalancer"
   # volumes:
   # volumeMounts:
+  podLabels: {}
+  deploymentLabels: {}
 textual_worker:
   # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
   numberOfWorkers: 1
   env: {}
+  # Used for mounting environment variables from secrets or configmaps
+  #  envFrom:
+  #    - secretRef:
+  #        name: textual-secrets
+  #    - configMapRef:
+  #        name: textual-config
+  envFrom: []
   nodeSelector: {}
   tolerations:
     []
@@ -98,6 +114,13 @@ textual_ml:
   # ocrWorkers: 2
   # convertDateWorkers: 4
   env: {}
+  # Used for mounting environment variables from secrets or configmaps
+  #  envFrom:
+  #    - secretRef:
+  #        name: textual-secrets
+  #    - configMapRef:
+  #        name: textual-config
+  envFrom: []
   nodeSelector: {}
   tolerations:
     []
@@ -127,25 +150,32 @@ textual_roberta:
   profiling:
     enabled: false
   env: {}
+  # Used for mounting environment variables from secrets or configmaps
+  #  envFrom:
+  #    - secretRef:
+  #        name: textual-secrets
+  #    - configMapRef:
+  #        name: textual-config
+  envFrom: []
   nodeSelector: {}
   tolerations:
     []
     # - key: "foo"
     #   operator: "Exists"
-  #   effect: "NoSchedule"
+    #   effect: "NoSchedule"
 
 ingress:
   enabled: false
   class: nginx
   host: null
   labels: {}
-#  tls:
-#    - hosts:
-#        - <textual-url>
-#      secretName: <secret-name>
-# By default this chart will create an nginx ingress, however providing
-# additional annotations will disable this
-#  annotations: {}
+  #  tls:
+  #    - hosts:
+  #        - <textual-url>
+  #      secretName: <secret-name>
+  # By default this chart will create an nginx ingress, however providing
+  # additional annotations will disable this
+  #  annotations: {}
 
 # This value will be provided to you by Solar and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>

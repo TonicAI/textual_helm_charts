@@ -1,3 +1,5 @@
+{{- $top := $ }}
+{{- $roberta := $top.Values.textual_roberta }}
 {{- $tolerations :=
   .Values.textual_roberta.tolerations
 }}
@@ -72,6 +74,10 @@ spec:
           - name: profiles
             mountPath: /profiles
           {{- end }}
+        {{- with $roberta.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           {{- if .Values.textualDatabase }}
           - name: SOLAR_DB_DATABASE

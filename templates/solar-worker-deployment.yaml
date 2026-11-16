@@ -1,4 +1,6 @@
 {{- if eq (include "textual.componentEnabled" (list $ "textual_worker")) "true" }}
+{{- $top := $ }}
+{{- $worker := $top.Values.textual_worker }}
 {{- $tolerations :=
   .Values.textual_worker.tolerations
  }}
@@ -56,6 +58,10 @@ spec:
             mountPath: /.lucene-index
             readOnly: false
           {{- include "textual.customCa.volumeMount" . | nindent 10 }}
+          {{- with $worker.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: SOLAR_LICENSE
               valueFrom:

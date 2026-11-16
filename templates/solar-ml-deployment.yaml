@@ -1,3 +1,5 @@
+{{- $top := $ }}
+{{- $ml := $top.Values.textual_ml }}
 {{- $tolerations :=
   .Values.textual_ml.tolerations
 }}
@@ -57,6 +59,10 @@ spec:
             mountPath: /usr/bin/textual/custom_models
           - name: tmp
             mountPath: /tmp
+        {{- with $ml.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         env:
           {{- if .Values.textualDatabase }}
           - name: SOLAR_DB_DATABASE

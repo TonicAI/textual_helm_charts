@@ -1,4 +1,8 @@
 {{- if eq (include "textual.componentEnabled" (list $ "textual_api_server")) "true" }}
+{{- $top := $ -}}
+{{- $server := $top.Values.textual_api_server -}}
+{{- $podLabels := mustMerge (dict "app" "textual-api-server") (default $server.podLabels (dict)) -}}
+{{- $deploymentLabels := mustMerge (dict "app" "textual-api-server") (default $server.deploymentLabels (dict)) -}}
 {{- $ports := (.Values.textual_api_server).ports | default dict }}
 {{- $httpsOnly := hasKey $ports "httpsOnly" | ternary $ports.httpsOnly true }}
 {{- $httpPort := $ports.http | default 6880 }}
@@ -11,12 +15,13 @@
 }}
 {{- $resources := coalesce
   .Values.textual_api_server.resources
-  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "8Gi" "cpu" "4" "ephemeral-storage" "512Mi")) -}}
+  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "8Gi" "cpu" "4" "ephemeral-storage" "512Mi"))
+-}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    {{- include "textual.allLabels" (list $ (dict "app" "textual-api-server")) | nindent 4 }}
+    {{- include "textual.allLabels" (list $ $deploymentLabels) | nindent 4 }}
   annotations:
     {{- include "textual.allAnnotations" (list $) | nindent 4 }}
   name: textual-api-server
@@ -32,7 +37,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "textual.allLabels" (list $ (dict "app" "textual-api-server")) | nindent 8 }}
+        {{- include "textual.allLabels" (list $ $podLabels) | nindent 8 }}
       annotations:
         {{- include "textual.allAnnotations" (list $) | nindent 8 }}
     spec:
@@ -61,6 +66,10 @@ spec:
             mountPath: /.lucene-index
             readOnly: true
           {{- include "textual.customCa.volumeMount" . | nindent 10 }}
+          {{- with $server.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
           {{- include "textual.applicationEnv" (list $ .Values.textual_api_server.env) | nindent 10 }}
           - name: SOLAR_SECRET
